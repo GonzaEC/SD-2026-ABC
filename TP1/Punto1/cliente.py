@@ -1,6 +1,7 @@
 import socket
 host = '127.0.0.1'
 puerto= 333
+
 def iniciar_cliente(): 
     cliente = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     cliente.connect((host,puerto))
@@ -10,6 +11,7 @@ def iniciar_cliente():
     print(f"Mensaje enviado!!!")
     datos = cliente.recv(1024)
     print(f"Mensaje recibido del servidor: ",datos.decode('utf-8'))
-    cliente.close
+    cliente.close()
 
+app = iniciar_cliente()
 
