@@ -290,3 +290,18 @@ Las principales mejoras son:
 - mejor mantenibilidad del sistema
 
 Por estas razones, gRPC es una solución ampliamente utilizada en arquitecturas modernas de microservicios y sistemas distribuidos.
+
+
+# Arquitectura del sistema
+
+```mermaid
+flowchart LR
+
+A[Cliente gRPC\ncliente.py]
+B[gRPC Channel\nHTTP/2]
+C[Servidor gRPC\nserver.py]
+
+A -->|MensajeRequest| B
+B -->|RPC Saludo| C
+C -->|MensajeResponse| B
+B -->|Respuesta| A
