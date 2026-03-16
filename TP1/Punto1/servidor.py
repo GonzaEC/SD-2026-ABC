@@ -1,29 +1,90 @@
 import socket
+import logging
+import os
+from fastapi import FastAPI
+import threading
+import uvicorn
 
-HOST = '127.0.0.1'
+# -------------------
+# Crear carpeta logs si no existe
+# -------------------
+os.makedirs("logs", exist_ok=True)
+
+# -------------------
+# Configuración de logging
+# -------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("logs/hit1.log"),  # logs en disco
+        logging.StreamHandler()                # logs en memoria / consola
+    ]
+)
+
+# -------------------
+# Variables TCP
+# -------------------
+HOST = '0.0.0.0'  # accesible desde cualquier IP
 PUERTO = 333
 
+# Estado del servicio para el endpoint
+estado_servicio = {
+    "Servidor TCP": "Detenido",
+    "Cliente TCP": "No ejecutado"
+}
+
+# -------------------
+# FastAPI
+# -------------------
+app = FastAPI()
+
+@app.get("/status")
+def status():
+    """Endpoint público que devuelve el estado de los servicios."""
+    return estado_servicio
+
+# -------------------
+# Servidor TCP
+# -------------------
 def iniciar_servidor():
-    #Creo el socket
-    SocketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    SocketServer.bind((HOST, PUERTO))
-    SocketServer.listen(1)
-    print("Servidor esperando conexión...")
-    
-    conexion, direccion = SocketServer.accept()
-    print(f"Conectado con: {direccion}")
-    
+    global estado_servicio
+    estado_servicio["Servidor TCP"] = "Iniciando"
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PUERTO))
+    s.listen(1)
+    logging.info(f"Servidor TCP esperando conexión en {HOST}:{PUERTO}...")
+
+    conexion, direccion = s.accept()
+    logging.info(f"Conectado con: {direccion}")
+
     mensaje = conexion.recv(1024).decode("utf-8")
-    print(f"Mensaje del cliente: {mensaje}")
-    
+    logging.info(f"Mensaje del cliente: {mensaje}")
+
     respuesta = "Hola A (cliente), soy B (servidor)."
     conexion.send(respuesta.encode())
-    print(f"Respuesta enviada: {respuesta}")
-    
+    logging.info(f"Respuesta enviada: {respuesta}")
+
     conexion.close()
-    SocketServer.close()
-    
+    s.close()
+
+    estado_servicio["Servidor TCP"] = "OK"
     return mensaje, respuesta
 
-if __name__ == "__main__":
+# -------------------
+# Ejecutar FastAPI y TCP en paralelo
+# -------------------
+def main():
+    # FastAPI en un thread separado
+    api_thread = threading.Thread(
+        target=lambda: uvicorn.run(app, host="0.0.0.0", port=8000),
+        daemon=True
+    )
+    api_thread.start()
+
+    # Servidor TCP
     iniciar_servidor()
+
+if __name__ == "__main__":
+    main()
