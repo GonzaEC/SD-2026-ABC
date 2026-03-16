@@ -14,8 +14,8 @@ Repositorio correspondiente a la materia **Sistemas Distribuidos y Programación
 Clonar el repositorio:
 
 ```
-git clone <https://github.com/GonzaEC/SD-2026-ABC>
-cd <SD-2026-ABC>
+git clone https://github.com/GonzaEC/SD-2026-ABC
+cd SD-2026-ABC
 ```
 
 Instalar dependencias:
