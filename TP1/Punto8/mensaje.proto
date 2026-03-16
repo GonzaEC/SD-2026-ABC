@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service NodoService {
+  rpc Saludo (MensajeRequest) returns (MensajeResponse);
+}
+
+message MensajeRequest {
+  string tipo = 1;
+  string mensaje = 2;
+}
+
+message MensajeResponse {
+  string tipo = 1;
+  string mensaje = 2;
+}

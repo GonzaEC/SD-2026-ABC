@@ -2,3 +2,6 @@ fastapi
 uvicorn
 pytest
 httpx
+requests
+grpcio
+grpcio-tools
