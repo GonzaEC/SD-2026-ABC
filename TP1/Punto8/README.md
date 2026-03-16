@@ -1,4 +1,5 @@
-# SD-2026-ABC - Punto 8: Refactorización a gRPC / Protocol Buffers
+# TP1 - Sistemas Distribuidos  
+## Hit 8 - Refactorización a gRPC / Protocol Buffers
 
 ## Descripción
 
