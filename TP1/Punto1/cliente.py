@@ -12,6 +12,9 @@ def iniciar_cliente():
     datos = cliente.recv(1024)
     print(f"Mensaje recibido del servidor: ",datos.decode('utf-8'))
     cliente.close()
+    return datos.decode('utf-8') 
 
-app = iniciar_cliente()
+if __name__ == "__main__":
+    iniciar_cliente()
+    
 

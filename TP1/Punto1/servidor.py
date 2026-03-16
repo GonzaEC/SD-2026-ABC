@@ -3,28 +3,27 @@ import socket
 HOST = '127.0.0.1'
 PUERTO = 333
 
-#Creo el socket
-SocketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def iniciar_servidor():
+    #Creo el socket
+    SocketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    SocketServer.bind((HOST, PUERTO))
+    SocketServer.listen(1)
+    print("Servidor esperando conexión...")
+    
+    conexion, direccion = SocketServer.accept()
+    print(f"Conectado con: {direccion}")
+    
+    mensaje = conexion.recv(1024).decode("utf-8")
+    print(f"Mensaje del cliente: {mensaje}")
+    
+    respuesta = "Hola A (cliente), soy B (servidor)."
+    conexion.send(respuesta.encode())
+    print(f"Respuesta enviada: {respuesta}")
+    
+    conexion.close()
+    SocketServer.close()
+    
+    return mensaje, respuesta
 
-#Asocio al socket la IP y Puerto
-SocketServer.bind((HOST, PUERTO))
-
-#Escucho conexiones
-SocketServer.listen(1)
-print("Servidor esperando conexión...")
-
-#Acepto conexion
-conexion, direccion = SocketServer.accept()
-print("Conectado con:", direccion)
-
-#Recibo mensaje
-mensaje = conexion.recv(1024).decode("UTF-8")
-print("Mensaje del cliente:", mensaje)
-
-#Respondo saludo
-respuesta = "Hola A (cliente), soy B (servidor)."
-conexion.send(respuesta.encode())
-
-#Cierro conexion
-conexion.close()
-SocketServer.close()
+if __name__ == "__main__":
+    iniciar_servidor()
