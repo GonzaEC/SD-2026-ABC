@@ -1,6 +1,3 @@
-Acá tenés el **`README.md` completo del Hit 5** listo para guardar como `README.md`.
-
-````markdown
 # TP1 - Sistemas Distribuidos  
 ## Hit 5 - Comunicación entre nodos utilizando JSON
 
