@@ -6,7 +6,7 @@ Repositorio correspondiente a la materia **Sistemas Distribuidos y Programación
 
 -
 -
-- Gonzalo Echeverria Crenna 195155
+- Gonzalo Echeverria Crenna -195155
 
 
 ## Instalación
