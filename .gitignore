@@ -1,0 +1,59 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos compilados
+*.so
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+ENV/
+
+# =========================
+# Distribución / packaging
+# =========================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# =========================
+# Archivos de test
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Archivos de logs
+# =========================
+*.log
+
+# =========================
+# Archivos temporales
+# =========================
+*.tmp
+*.swp
+*.swo
+
+# =========================
+# VSCode
+# =========================
+.vscode/
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Archivos de entorno
+# =========================
+.env
+
