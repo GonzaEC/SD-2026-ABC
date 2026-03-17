@@ -3,18 +3,20 @@ import logging
 import os
 
 # -------------------
-# Crear carpeta logs si no existe
+# Carpeta de logs relativa al script
 # -------------------
-os.makedirs("logs", exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
 
 # -------------------
 # Logging
 # -------------------
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,  # Solo INFO y superior
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("logs/hit1.log"),
+        logging.FileHandler(os.path.join(LOG_DIR, "hit1.log")),
         logging.StreamHandler()
     ]
 )

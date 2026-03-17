@@ -6,9 +6,11 @@ import threading
 import uvicorn
 
 # -------------------
-# Crear carpeta logs si no existe
+# Carpeta de logs relativa al script
 # -------------------
-os.makedirs("logs", exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
 
 # -------------------
 # Configuración de logging
@@ -17,18 +19,18 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("logs/hit1.log"),  # logs en disco
-        logging.StreamHandler()                # logs en memoria / consola
+        logging.FileHandler(os.path.join(LOG_DIR, "hit1.log")),
+        logging.StreamHandler()
     ]
 )
 
 # -------------------
 # Variables TCP
 # -------------------
-HOST = '0.0.0.0'  # accesible desde cualquier IP
+HOST = '0.0.0.0'
 PUERTO = 333
 
-# Estado del servicio para el endpoint
+# Estado del servicio
 estado_servicio = {
     "Servidor TCP": "Detenido",
     "Cliente TCP": "No ejecutado"
@@ -76,14 +78,14 @@ def iniciar_servidor():
 # Ejecutar FastAPI y TCP en paralelo
 # -------------------
 def main():
-    # FastAPI en un thread separado
+    # Ejecutar FastAPI en un thread con log_level="warning"
     api_thread = threading.Thread(
-        target=lambda: uvicorn.run(app, host="0.0.0.0", port=8000),
+        target=lambda: uvicorn.run(app, host="0.0.0.0", port=8000, log_level="warning"),
         daemon=True
     )
     api_thread.start()
 
-    # Servidor TCP
+    # Ejecutar servidor TCP
     iniciar_servidor()
 
 if __name__ == "__main__":
