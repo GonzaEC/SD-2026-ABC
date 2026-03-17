@@ -1,10 +1,13 @@
 from fastapi import FastAPI, Request
+import uvicorn
 import time
 
 registro = []
 app = FastAPI()
 tiempoInicio = time.time()
-
+def iniciar_servidor(IP,Puerto):
+    uvicorn.run("nodoD:app",host=IP,port=Puerto,log_level="info")
+    
 @app.get("/REGISTER")
 def registrarPrograma(peticion: Request):
     registro_actual = {

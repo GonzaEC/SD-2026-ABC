@@ -4,49 +4,97 @@ import threading
 import sys
 import json
 import requests
+import logging
+import os
+from fastapi import FastAPI
 
-def cliente(IP, PUERTO): 
+# -------------------
+# Carpeta de logs relativa al script
+# -------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# -------------------
+# Logging
+# -------------------
+logging.basicConfig(
+    level=logging.INFO,  # Solo INFO y superior
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(LOG_DIR, "hit3.log")),
+        logging.StreamHandler()
+    ]
+)
+
+# Estado del servicio
+estado_servicio = {
+    "Servidor TCP": "No ejecutado",
+    "Cliente TCP": "Detenido"
+}
+
+# -------------------
+# FastAPI
+# -------------------
+app = FastAPI()
+
+@app.get("/status")
+def status():
+    """Endpoint público que devuelve el estado de los servicios."""
+    return estado_servicio
+
+def cliente(IP, PUERTO,respuestaC): 
+    global estado_servicio
+
+    estado_servicio["Cliente TCP"] = "Iniciando"
+    logging.info("[CLIENTE - Nodo C] Iniciando cliente...")
     while(True):
         try:
             cliente = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             cliente.connect((IP,PUERTO))
-            print(f"Conectado con el servidor")
+            logging.info(f"Conectado con el servidor")
             msj = {
                 "tipo": "saludo",
                 "mensaje": "hola!!!"
                 }
             msj = json.dumps(msj)
             cliente.send(msj.encode('utf-8'))
-            print(f"Mensaje enviado!!!")
+            logging.info(f"Mensaje enviado!!!")
             datos = cliente.recv(1024)
             datos = json.loads(datos.decode('utf-8'))
-            print(f"Mensaje recibido del servidor: ",datos)
+            logging.info(f"Mensaje recibido del servidor: ",datos)
+            respuestaC.put(datos.decode('utf-8'))
             cliente.close()
+            estado_servicio["Cliente TCP"] = "OK"
             break
 
         except (ConnectionRefusedError, ConnectionResetError, ConnectionError):
-            print("Conexión perdida. Reintentando en 3 segundos...")
+            logging.info("Conexión perdida. Reintentando en 3 segundos...")
+            estado_servicio["Cliente TCP"] = "Reintentando conexion"
+
             time.sleep(3)
 
 def servidor(IP,PUERTO):
     SocketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     SocketServer.bind((IP, PUERTO))
     SocketServer.listen(1)
-    print("Servidor esperando conexiones...")
+    logging.info("Servidor esperando conexiones...")
+    estado_servicio["Servidor TCP"] = "Iniciando"
     while True:
+        
         try:
             conexion, direccion = SocketServer.accept()
-            print("Conectado con:", direccion)
+            logging.info("Conectado con:", direccion)
 
             datos = conexion.recv(1024)
 
             if not datos:
-                print("El cliente cerro la conexión")
+                logging.info("El cliente cerro la conexión")
                 conexion.close()
                 continue
 
             mensaje = json.loads(datos.decode("utf-8"))
-            print("Mensaje del cliente:", mensaje)
+            logging.info("Mensaje del cliente:", mensaje)
 
            
             respuesta = {
@@ -57,13 +105,13 @@ def servidor(IP,PUERTO):
             conexion.send(respuesta.encode('utf-8'))
 
             conexion.close()
+            estado_servicio["Servidor TCP"] = "OK"
 
         except ConnectionResetError:
-            print("El cliente cerro la conexion")
+            logging.info("El cliente cerro la conexion")
 
-def main():
-    ip_escuchaD = sys.argv[1]
-    puerto_escuchaD = int(sys.argv[2])
+def main(ip_escuchaD, puerto_escuchaD, respuestaC):
+    
     peticion = requests.get("http://" + str(ip_escuchaD) + ":" + str(puerto_escuchaD) + "/REGISTER", stream = True)
     socket = peticion.raw._connection.sock
     IP_nodo, Puerto_nodo = socket.getsockname()
@@ -76,9 +124,12 @@ def main():
         IP_Actual = nodo["ip"]
         Puerto_Actual = nodo["puerto"] 
         if(Puerto_Actual != Puerto_nodo):
-            hilo_cliente = threading.Thread(target=cliente,args=(IP_Actual,Puerto_Actual))
+            hilo_cliente = threading.Thread(target=cliente,args=(IP_Actual,Puerto_Actual,respuestaC))
             hilo_cliente.start()
             hilo_cliente.join()
     #peticion = requests.get("http://"  + str(ip_escuchaD) + ":" + str(puerto_escuchaD) +"/health")
 
-app = main()
+if __name__ == "__main__":
+    ip_escuchaD = sys.argv[1]
+    puerto_escuchaD = int(sys.argv[2])
+    main(ip_escuchaD, puerto_escuchaD, None)
