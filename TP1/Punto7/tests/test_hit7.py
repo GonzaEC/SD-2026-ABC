@@ -1,20 +1,66 @@
-import threading
 import time
-from servidor import iniciar_servidor
-from cliente import iniciar_cliente
+import sys
+import os 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from fastapi.testclient import TestClient
+from nodoD import app, nodos_activos, nodos_siguientes
 
-def test_servidor_responde_cliente():
-    """Prueba de integración cliente-servidor TCP"""
-    
-    # Levanto servidor en un thread para no bloquear
-    server_thread = threading.Thread(target=iniciar_servidor, daemon=True)
-    server_thread.start()
-    
-    # Pequeña espera para que el servidor se inicialice
-    time.sleep(1)
-    
-    # Llamo al cliente y obtengo la respuesta
-    respuesta_cliente = iniciar_cliente()
-    
-    # Verifico que la respuesta del servidor sea correcta
-    assert "Hola A" in respuesta_cliente
+client = TestClient(app)
+
+def limpiar_estado():
+    nodos_activos.clear()
+    nodos_siguientes.clear()
+
+def simular_cambio_ventana():
+    global nodos_activos, nodos_siguientes
+    nodos_activos.clear()
+    nodos_activos.extend(nodos_siguientes)
+    nodos_siguientes.clear()
+
+def test_sistema_completo():
+
+    # 1. Limpio estado inicial
+    limpiar_estado()
+
+    # 2. Registro nodos (simula nodos C registrándose en D)
+    client.post("/REGISTER", json={"ip": "127.0.0.1", "puerto": 5001})
+    client.post("/REGISTER", json={"ip": "127.0.0.1", "puerto": 5002})
+    client.post("/REGISTER", json={"ip": "127.0.0.1", "puerto": 5003})
+
+    # Todavía NO deben estar activos
+    response = client.get("/nodos")
+    assert response.json()["nodos"] == []
+
+    # 3. Simulo paso de ventana (como si pasaran los 60s)
+    simular_cambio_ventana()
+
+    # 4. Ahora SÍ deben estar activos
+    response = client.get("/nodos")
+    nodos = response.json()["nodos"]
+
+    assert len(nodos) == 3
+
+    puertos = [n["puerto"] for n in nodos]
+    assert 5001 in puertos
+    assert 5002 in puertos
+    assert 5003 in puertos
+
+    # 5. Registro un nodo nuevo (debe ir a la SIGUIENTE ventana)
+    client.post("/REGISTER", json={"ip": "127.0.0.1", "puerto": 6000})
+
+    # Sigue sin aparecer en activos
+    response = client.get("/nodos")
+    nodos = response.json()["nodos"]
+
+    puertos = [n["puerto"] for n in nodos]
+    assert 6000 not in puertos
+
+    # 6. Nuevo cambio de ventana
+    simular_cambio_ventana()
+
+    # 7. Ahora solo debería estar el nuevo nodo
+    response = client.get("/nodos")
+    nodos = response.json()["nodos"]
+
+    assert len(nodos) == 1
+    assert nodos[0]["puerto"] == 6000
