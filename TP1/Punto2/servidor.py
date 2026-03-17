@@ -14,7 +14,7 @@ PUERTO = 333
 # -------------------
 # Carpeta de logs relativa al script
 # -------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals() else os.getcwd()
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -63,11 +63,11 @@ def iniciar_servidor():
 
     #Acepto conexion
     conexion, direccion = SocketServer.accept()
-    logging.info("Conectado con:", direccion)
+    logging.info("Conectado con: %s", direccion)
 
     #Recibo mensaje
     mensaje = conexion.recv(1024).decode("UTF-8")
-    logging.info("Mensaje del cliente:", mensaje)
+    logging.info("Mensaje del cliente: %s", mensaje)
 
     #Respondo saludo
     respuesta = "Hola A (cliente), soy B (servidor)."
@@ -89,8 +89,8 @@ def main():
     )
     api_thread.start()
 
-    # Ejecutar servidor TCP
-    iniciar_servidor()
+    
 
 if __name__ == "__main__":
     main()
+    iniciar_servidor()
