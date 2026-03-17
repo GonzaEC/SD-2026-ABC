@@ -44,7 +44,7 @@ def iniciar_cliente(colaRespuesta,colaIntentos):
             cliente.send(mensaje.encode('utf-8'))
             logging.info(f"Mensaje enviado!!!")
             datos = cliente.recv(1024)
-            logging.info(f"Mensaje recibido del servidor: ",datos.decode('utf-8'))
+            logging.info(f"Mensaje recibido del servidor: %s",datos.decode('utf-8'))
             cliente.close()
             colaRespuesta.put(datos.decode('utf-8'))
             colaIntentos.put(intentos)
@@ -57,5 +57,5 @@ def iniciar_cliente(colaRespuesta,colaIntentos):
     
 
 if __name__ == "__main__":
-    iniciar_cliente()
+    iniciar_cliente(Queue(),Queue())
 

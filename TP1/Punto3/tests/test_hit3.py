@@ -19,8 +19,7 @@ def test_servidor_activo():
     # Levanto servidor en un thread para no bloquear
     server_thread = threading.Thread(target=iniciar_servidor,args=(estado,))
     server_thread.start()
-    cliente_thread.join()
-    server_thread.join()
+    
     #  espera para que el servidor inicialice y obtener resultados
     time.sleep(1)
     respuesta = respuesta_cliente.get(timeout=10)

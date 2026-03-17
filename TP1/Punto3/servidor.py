@@ -8,7 +8,7 @@ import os
 from fastapi import FastAPI
 import threading
 import uvicorn
-
+estadoV = {"valor": "vacio"}
 # -------------------
 # Variables TCP
 # -------------------
@@ -65,7 +65,7 @@ def iniciar_servidor(estado):
         estado["valor"] = "Servidor esperando conexiones..."
         try:
             conexion, direccion = SocketServer.accept()
-            logging.info("Conectado con:", direccion)
+            logging.info("Conectado con: %s", direccion)
             estado["valor"] =  "Conectado con cliente" 
             datos = conexion.recv(1024)
 
@@ -75,15 +75,13 @@ def iniciar_servidor(estado):
                 continue
 
             mensaje = datos.decode("utf-8")
-            logging.info("Mensaje del cliente:", mensaje)
+            logging.info("Mensaje del cliente: %s", mensaje)
 
             respuesta = "Hola A (cliente), soy B (servidor)"
             conexion.send(respuesta.encode("utf-8"))
 
             conexion.close()
-            SocketServer.close()
             estado_servicio["Servidor TCP"] = "OK"
-
         except ConnectionResetError:
             logging.info("El cliente cerro la conexion")
 
@@ -98,8 +96,10 @@ def main():
     )
     api_thread.start()
 
+    
     # Ejecutar servidor TCP
-    iniciar_servidor()
+    #se inicia vacio porque este valor es usado para los tests
 
 if __name__ == "__main__":
+    iniciar_servidor(estadoV)
     main()
