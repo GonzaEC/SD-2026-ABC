@@ -5,7 +5,7 @@ Repositorio correspondiente a la materia **Sistemas Distribuidos y Programación
 ## Grupo ABC
 
 -
--
+- Ian Lucas Ott - 191800
 - Gonzalo Echeverria Crenna -195155
 
 
