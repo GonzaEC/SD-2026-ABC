@@ -36,7 +36,7 @@ def iniciar_cliente(colaRespuesta,colaIntentos):
     intentos = 0
     while(True):
         try:
-            
+            estado_servicio["Cliente TCP"] = "Iniciando"
             cliente = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             cliente.connect((host,puerto))
             logging.info(f"Conectado con el servidor")
@@ -48,10 +48,12 @@ def iniciar_cliente(colaRespuesta,colaIntentos):
             cliente.close()
             colaRespuesta.put(datos.decode('utf-8'))
             colaIntentos.put(intentos)
+            estado_servicio["Cliente TCP"] = "OK"
             break
 
         except (ConnectionRefusedError, ConnectionResetError, ConnectionError):
             logging.info("Conexión perdida. Reintentando en 3 segundos...")
+            estado_servicio["Cliente TCP"] = "Reintentando conexion"
             time.sleep(3)
             intentos += 1        
     

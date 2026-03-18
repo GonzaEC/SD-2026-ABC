@@ -101,5 +101,6 @@ def main():
     #se inicia vacio porque este valor es usado para los tests
 
 if __name__ == "__main__":
-    iniciar_servidor(estadoV)
     main()
+    iniciar_servidor(estadoV)
+    
