@@ -7,6 +7,7 @@ import requests
 import logging
 import os
 from fastapi import FastAPI
+from queue import Queue
 
 # -------------------
 # Carpeta de logs relativa al script
@@ -22,7 +23,7 @@ logging.basicConfig(
     level=logging.INFO,  # Solo INFO y superior
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join(LOG_DIR, "hit3.log")),
+        logging.FileHandler(os.path.join(LOG_DIR, "hit6.log")),
         logging.StreamHandler()
     ]
 )
@@ -62,8 +63,8 @@ def cliente(IP, PUERTO,respuestaC):
             logging.info(f"Mensaje enviado!!!")
             datos = cliente.recv(1024)
             datos = json.loads(datos.decode('utf-8'))
-            logging.info(f"Mensaje recibido del servidor: ",datos)
-            respuestaC.put(datos.decode('utf-8'))
+            logging.info(f"Mensaje recibido del servidor: %s",datos)
+            respuestaC.put(datos)
             cliente.close()
             estado_servicio["Cliente TCP"] = "OK"
             break
@@ -84,7 +85,7 @@ def servidor(IP,PUERTO):
         
         try:
             conexion, direccion = SocketServer.accept()
-            logging.info("Conectado con:", direccion)
+            logging.info("Conectado con: %s", direccion)
 
             datos = conexion.recv(1024)
 
@@ -94,7 +95,7 @@ def servidor(IP,PUERTO):
                 continue
 
             mensaje = json.loads(datos.decode("utf-8"))
-            logging.info("Mensaje del cliente:", mensaje)
+            logging.info("Mensaje del cliente: %s", mensaje)
 
            
             respuesta = {
@@ -127,9 +128,8 @@ def main(ip_escuchaD, puerto_escuchaD, respuestaC):
             hilo_cliente = threading.Thread(target=cliente,args=(IP_Actual,Puerto_Actual,respuestaC))
             hilo_cliente.start()
             hilo_cliente.join()
-    #peticion = requests.get("http://"  + str(ip_escuchaD) + ":" + str(puerto_escuchaD) +"/health")
 
 if __name__ == "__main__":
     ip_escuchaD = sys.argv[1]
     puerto_escuchaD = int(sys.argv[2])
-    main(ip_escuchaD, puerto_escuchaD, None)
+    main(ip_escuchaD, puerto_escuchaD, Queue()) #la cola ingresa vacia normalmente porque es utilizada para tests
