@@ -5,15 +5,16 @@ import sys
 import json
 import os
 from datetime import datetime
+from flask import Flask, jsonify
 
-# 📌 logs en memoria
+# ---------------- LOGS ----------------
+
 logs = []
 
 def log_evento(mensaje):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log = f"[{timestamp}] {mensaje}"
 
-    # crear carpeta si no existe
     os.makedirs("log", exist_ok=True)
     ruta = os.path.join("log", "nodo_json.log")
 
@@ -24,6 +25,15 @@ def log_evento(mensaje):
 
     print(log)
 
+# ---------------- ESTADO ----------------
+
+estado = {
+    "servidor": "DOWN",
+    "cliente": "DOWN",
+    "logs": "OK"
+}
+
+# ---------------- CLIENTE ----------------
 
 def cliente(IP, PUERTO): 
     while True:
@@ -31,6 +41,7 @@ def cliente(IP, PUERTO):
             cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             cliente.connect((IP, PUERTO))
 
+            estado["cliente"] = "OK"
             log_evento("Cliente conectado al servidor")
 
             msj = {
@@ -48,23 +59,25 @@ def cliente(IP, PUERTO):
             log_evento(f"Mensaje recibido: {datos_json}")
 
             cliente.close()
-            return datos_json  # 👈 útil para tests
+            return datos_json
 
         except (ConnectionRefusedError, ConnectionResetError, ConnectionError):
+            estado["cliente"] = "REINTENTANDO"
             log_evento("Conexión perdida. Reintentando en 3 segundos...")
             time.sleep(3)
 
+# ---------------- SERVIDOR ----------------
 
 def servidor(IP, PUERTO):
     SocketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # reutilizar puerto
     SocketServer.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     SocketServer.bind((IP, PUERTO))
     SocketServer.listen(1)
     SocketServer.settimeout(1)
 
+    estado["servidor"] = "OK"
     log_evento(f"Servidor escuchando en {IP}:{PUERTO}")
 
     while True:
@@ -97,6 +110,21 @@ def servidor(IP, PUERTO):
         except ConnectionResetError:
             log_evento("El cliente cerró la conexión")
 
+# ---------------- HTTP HEALTH ----------------
+
+app = Flask(__name__)
+
+@app.route("/health")
+def health():
+    return jsonify({
+        **estado,
+        "timestamp": datetime.now().isoformat()
+    })
+
+def iniciar_http():
+    app.run(port=8000)
+
+# ---------------- MAIN ----------------
 
 def main():
     if len(sys.argv) != 5:
@@ -109,12 +137,13 @@ def main():
     ip_remota = sys.argv[3]
     puerto_remoto = int(sys.argv[4])
 
-    hilo_server = threading.Thread(target=servidor, args=(ip_escucha, puerto_escucha))
-    hilo_server.daemon = True  # permite cerrar con Ctrl+C
-
+    hilo_server = threading.Thread(target=servidor, args=(ip_escucha, puerto_escucha), daemon=True)
     hilo_cliente = threading.Thread(target=cliente, args=(ip_remota, puerto_remoto))
+    hilo_http = threading.Thread(target=iniciar_http, daemon=True)
 
     hilo_server.start()
+    hilo_http.start()
+
     time.sleep(1)
     hilo_cliente.start()
 

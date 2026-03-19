@@ -7,10 +7,8 @@ from datetime import datetime
 from flask import Flask, jsonify
 import threading
 
-# 📌 logs en memoria
 logs = []
 
-# 📌 estado del sistema
 estado = {
     "grpc_server": "DOWN",
     "logs": "OK"

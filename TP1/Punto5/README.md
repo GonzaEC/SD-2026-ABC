@@ -1,4 +1,5 @@
-# TP1 - Sistemas Distribuidos  
+# TP1 - Sistemas Distribuidos
+
 ## Hit 5 - Comunicación entre nodos utilizando JSON
 
 ---
@@ -9,8 +10,8 @@ En este hit se modifica el programa **C (nodo)** desarrollado en el Hit 4 para q
 
 Para lograr esto se implementa un proceso de:
 
-- **serialización** al enviar mensajes
-- **deserialización** al recibir mensajes
+* **serialización** al enviar mensajes
+* **deserialización** al recibir mensajes
 
 En lugar de enviar texto plano, los nodos ahora intercambian **estructuras de datos JSON**, lo que permite transmitir información estructurada de manera clara y extensible.
 
@@ -20,12 +21,14 @@ Esto representa una práctica común en sistemas distribuidos y aplicaciones de 
 
 # Tecnologías utilizadas
 
-- Python 3
-- Biblioteca `socket`
-- Biblioteca `threading`
-- Biblioteca `json`
-- Biblioteca `time`
-- Biblioteca `sys`
+* Python 3
+* Biblioteca `socket`
+* Biblioteca `threading`
+* Biblioteca `json`
+* Biblioteca `time`
+* Biblioteca `sys`
+* Flask (endpoint de monitoreo)
+* unittest (testing)
 
 ---
 
@@ -35,6 +38,10 @@ Esto representa una práctica común en sistemas distribuidos y aplicaciones de 
 Hit5/
 │
 ├── nodo.py
+├── log/
+├── tests/
+│   ├── __init__.py
+│   └── test_nodo_json.py
 └── README.md
 ```
 
@@ -44,8 +51,8 @@ Hit5/
 
 Implementa un nodo distribuido que funciona simultáneamente como:
 
-- cliente TCP
-- servidor TCP
+* cliente TCP
+* servidor TCP
 
 Los mensajes intercambiados entre nodos se envían en **formato JSON**.
 
@@ -63,11 +70,6 @@ NodoB -->|JSON saludo| NodoA
 NodoA -->|JSON respuesta| NodoB
 ```
 
-Cada nodo ejecuta simultáneamente:
-
-- un **servidor** que escucha mensajes
-- un **cliente** que envía mensajes
-
 ---
 
 # Arquitectura interna del nodo
@@ -83,8 +85,6 @@ Nodo --> Cliente
 Cliente --> SerializacionJSON
 Servidor --> DeserializacionJSON
 ```
-
-Los mensajes se transforman entre estructuras de datos y JSON antes de ser enviados o después de ser recibidos.
 
 ---
 
@@ -119,33 +119,27 @@ python --version
 
 ---
 
-# 2. Ejecutar el primer nodo
+## Instalación de dependencias
 
-Abrir una terminal y ejecutar:
+```bash
+pip install flask
+```
+
+---
+
+# 2. Ejecutar el primer nodo
 
 ```bash
 python nodo.py 127.0.0.1 5000 127.0.0.1 5001
 ```
 
-Este nodo:
-
-- escucha en **5000**
-- se conecta al nodo **5001**
-
 ---
 
 # 3. Ejecutar el segundo nodo
 
-Abrir otra terminal y ejecutar:
-
 ```bash
 python nodo.py 127.0.0.1 5001 127.0.0.1 5000
 ```
-
-Este nodo:
-
-- escucha en **5001**
-- se conecta al nodo **5000**
 
 ---
 
@@ -177,110 +171,129 @@ Este nodo:
 
 ## Serialización de mensajes
 
-Antes de enviar un mensaje, el diccionario de Python se convierte a JSON utilizando:
-
 ```python
 json.dumps()
 ```
-
-Ejemplo:
-
-```python
-msj = {
-    "tipo": "saludo",
-    "mensaje": "hola!!!"
-}
-
-msj = json.dumps(msj)
-```
-
-Luego se envía por el socket.
 
 ---
 
 ## Deserialización de mensajes
 
-Cuando se recibe un mensaje desde el socket, se convierte nuevamente a estructura de Python utilizando:
-
 ```python
 json.loads()
 ```
-
-Ejemplo:
-
-```python
-mensaje = json.loads(datos.decode("utf-8"))
-```
-
-Esto permite acceder a los campos del mensaje como un diccionario.
 
 ---
 
 ## Concurrencia
 
-El nodo ejecuta dos hilos:
+Se utilizan dos hilos:
 
-- **servidor**
-- **cliente**
+* servidor
+* cliente
 
-Esto se implementa utilizando la biblioteca `threading`.
+---
 
-```python
-hilo_server = threading.Thread(...)
-hilo_cliente = threading.Thread(...)
+# Logs del sistema
+
+El sistema implementa un mecanismo de logging que registra eventos tanto en memoria como en disco.
+
+Los logs incluyen:
+
+* conexiones de cliente y servidor
+* mensajes enviados y recibidos
+* errores de conexión
+
+Los logs se almacenan en:
+
 ```
+log/nodo_json.log
+```
+
+Esto permite auditoría y seguimiento del comportamiento del sistema.
+
+---
+
+# Pruebas automatizadas
+
+Se implementan pruebas unitarias y de integración utilizando `unittest`.
+
+## Ejecutar tests
+
+```bash
+python -m unittest discover -s tests -t . -v
+```
+
+Las pruebas verifican:
+
+* serialización y deserialización JSON
+* funcionamiento del sistema de logs
+* comunicación entre cliente y servidor
+
+---
+
+# Endpoint de monitoreo (Health Check)
+
+Se implementa un endpoint HTTP que permite verificar el estado del nodo.
+
+## URL
+
+```
+http://localhost:8000/health
+```
+
+## Ejemplo de respuesta
+
+```json
+{
+  "servidor": "OK",
+  "cliente": "OK",
+  "logs": "OK"
+}
+```
+
+Este endpoint permite monitorear:
+
+* estado del servidor
+* estado del cliente
+* estado del sistema de logs
 
 ---
 
 # Decisiones de diseño
 
-Durante la implementación se tomaron las siguientes decisiones:
-
 ### Uso de JSON
 
-Se decidió utilizar JSON porque:
-
-- es un formato estándar de intercambio de datos
-- es fácil de leer y depurar
-- es ampliamente utilizado en APIs y sistemas distribuidos
+* formato estándar
+* fácil de leer
+* extensible
 
 ---
 
-### Serialización y deserialización
+### Logs
 
-Se utilizaron las funciones:
-
-- `json.dumps()` para serializar
-- `json.loads()` para deserializar
-
-Esto permite transformar estructuras de datos de Python en mensajes transmitibles por red.
+Se incorporó un sistema de logging para mejorar la observabilidad del sistema y facilitar debugging.
 
 ---
 
-### Mensajes estructurados
+### Testing
 
-Los mensajes ahora contienen campos definidos:
-
-- **tipo** → tipo de mensaje
-- **mensaje** → contenido del mensaje
-
-Esto facilita extender el protocolo en futuras versiones.
+Se agregaron pruebas automatizadas para validar el comportamiento del sistema.
 
 ---
 
-### Reutilización del nodo distribuido
+### Endpoint de monitoreo
 
-Se mantuvo la arquitectura del Hit 4 donde cada nodo funciona simultáneamente como cliente y servidor.
-
-Esto permite comunicación bidireccional entre nodos.
+Se implementó un endpoint `/health` para exponer el estado del sistema, siguiendo prácticas comunes en sistemas distribuidos.
 
 ---
 
 # Conclusión
 
-En este hit se introduce el uso de **JSON como formato de intercambio de datos entre nodos**.
+En este hit se introduce el uso de **JSON como formato de intercambio de datos entre nodos**, junto con mejoras en:
 
-Esto permite enviar mensajes estructurados en lugar de texto plano, facilitando la extensión del protocolo de comunicación y acercando la implementación a sistemas distribuidos reales.
+* observabilidad (logs)
+* validación (tests)
+* monitoreo (endpoint `/health`)
 
-La combinación de nodos cliente/servidor con mensajes JSON representa una arquitectura flexible y extensible para aplicaciones distribuidas.
-````
+Esto acerca la implementación a sistemas distribuidos reales y mejora la robustez del sistema.
