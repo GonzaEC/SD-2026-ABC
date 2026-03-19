@@ -1,0 +1,22 @@
+[2026-03-19 12:52:32] Servidor escuchando en 127.0.0.1:6001
+[2026-03-19 12:52:33] Cliente conectado desde ('127.0.0.1', 56960)
+[2026-03-19 12:52:33] Mensaje enviado: hola!!!
+
+[2026-03-19 12:52:33] Respuesta enviada
+[2026-03-19 12:52:33] Respuesta recibida: Hola A (cliente), soy B (servidor)
+[2026-03-19 12:52:33] Test archivo
+[2026-03-19 12:52:33] Test memoria
+[2026-03-19 12:53:06] Servidor escuchando en 127.0.0.1:5000
+[2026-03-19 12:53:09] Conexión fallida. Reintentando en 3 segundos...
+[2026-03-19 12:53:13] Servidor escuchando en 127.0.0.1:5001
+[2026-03-19 12:53:13] Cliente conectado al servidor
+[2026-03-19 12:53:13] Cliente conectado desde ('127.0.0.1', 56977)
+[2026-03-19 12:53:13] Mensaje enviado: hola!!!
+[2026-03-19 12:53:13] Mensaje recibido: hola!!!
+[2026-03-19 12:53:13] Respuesta recibida: Hola A (cliente), soy B (servidor)
+[2026-03-19 12:53:14] Cliente conectado desde ('127.0.0.1', 56980)
+[2026-03-19 12:53:14] Cliente conectado al servidor
+[2026-03-19 12:53:14] Mensaje recibido: hola!!!
+[2026-03-19 12:53:14] Mensaje enviado: hola!!!
+[2026-03-19 12:53:14] Respuesta enviada
+[2026-03-19 12:53:14] Respuesta recibida: Hola A (cliente), soy B (servidor)

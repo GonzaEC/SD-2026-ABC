@@ -1,0 +1,7 @@
+[2026-03-19 13:05:07] Servidor escuchando en 127.0.0.1:7000
+[2026-03-19 13:05:08] Cliente conectado al servidor
+.0.1', 57283)
+[2026-03-19 13:05:08] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-19 13:05:08] Respuesta enviada: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-19 13:05:08] test archivo json
+[2026-03-19 13:05:08] test json
