@@ -269,6 +269,91 @@ Esto facilita las pruebas en entornos distribuidos.
 Se mantuvo el mecanismo de reconexión del hit anterior para asegurar que el nodo pueda conectarse incluso si el nodo remoto aún no está disponible.
 
 ---
+---
+
+# Logs del sistema
+
+Los logs incluyen:
+
+* conexiones de clientes
+* mensajes enviados y recibidos
+* errores de conexión
+* eventos de ejecución
+
+Los registros se almacenan en:
+
+```
+log/nodo.log
+```
+
+Además, los logs se mantienen en memoria para facilitar su uso durante la ejecución.
+
+Esto permite mejorar la observabilidad del sistema y facilitar tareas de debugging.
+
+---
+
+# Pruebas automatizadas
+
+Se implementaron pruebas unitarias y de integración utilizando la biblioteca estándar `unittest`.
+
+## Estructura de tests
+
+```
+tests/
+├── __init__.py
+└── test_nodo.py
+```
+
+## Ejecución de tests
+
+Desde la raíz del proyecto ejecutar:
+
+```bash
+python -m unittest discover -s tests -t . -v
+```
+
+Las pruebas cubren:
+
+* funcionamiento del cliente
+* funcionamiento del servidor
+* envío y recepción de mensajes
+* generación de logs
+
+---
+
+# Endpoint de monitoreo (Health Check)
+
+Se implementa un endpoint HTTP que permite verificar el estado del nodo en tiempo real.
+
+Este endpoint sigue prácticas comunes en sistemas distribuidos para monitoreo de servicios.
+
+## URL
+
+```
+http://localhost:8000/health
+```
+
+## Ejemplo de respuesta
+
+```json
+{
+  "servidor": "OK",
+  "cliente": "OK",
+  "logs": "OK"
+}
+```
+
+## Información expuesta
+
+El endpoint devuelve el estado de:
+
+* servidor → indica si el nodo está escuchando conexiones
+* cliente → indica si el nodo logró conectarse o está reintentando
+* logs → estado del sistema de logging
+
+Esto permite detectar rápidamente fallos en el sistema sin necesidad de revisar logs manualmente.
+
+---
 
 # Conclusión
 

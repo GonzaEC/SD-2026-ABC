@@ -4,6 +4,9 @@ import threading
 import sys
 from datetime import datetime
 import os
+from flask import Flask, jsonify
+
+# ---------------- LOGS ----------------
 
 logs = []
 
@@ -12,7 +15,6 @@ def log_evento(mensaje):
     log = f"[{timestamp}] {mensaje}"
 
     os.makedirs("log", exist_ok=True)
-
     ruta = os.path.join("log", "nodo.log")
 
     logs.append(log)
@@ -22,12 +24,23 @@ def log_evento(mensaje):
 
     print(log)
 
+# ---------------- ESTADO ----------------
+
+estado = {
+    "servidor": "DOWN",
+    "cliente": "DOWN",
+    "logs": "OK"
+}
+
+# ---------------- CLIENTE ----------------
+
 def cliente(IP, PUERTO): 
     while True:
         try:
             cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             cliente.connect((IP, PUERTO))
 
+            estado["cliente"] = "OK"
             log_evento("Cliente conectado al servidor")
 
             mensaje = "hola!!!"
@@ -42,9 +55,11 @@ def cliente(IP, PUERTO):
             break
 
         except (ConnectionRefusedError, ConnectionResetError, ConnectionError):
+            estado["cliente"] = "REINTENTANDO"
             log_evento("Conexión fallida. Reintentando en 3 segundos...")
             time.sleep(3)
 
+# ---------------- SERVIDOR ----------------
 
 def servidor(IP, PUERTO):
     SocketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -53,6 +68,7 @@ def servidor(IP, PUERTO):
     SocketServer.listen(1)
     SocketServer.settimeout(1)
 
+    estado["servidor"] = "OK"
     log_evento(f"Servidor escuchando en {IP}:{PUERTO}")
 
     while True:
@@ -81,6 +97,21 @@ def servidor(IP, PUERTO):
         except ConnectionResetError:
             log_evento("Conexión reiniciada por el cliente")
 
+# ---------------- HTTP HEALTH ----------------
+
+app = Flask(__name__)
+
+@app.route("/health")
+def health():
+    return jsonify({
+        **estado,
+        "timestamp": datetime.now().isoformat()
+    })
+
+def iniciar_http():
+    app.run(port=8000)
+
+# ---------------- MAIN ----------------
 
 def main():
     if len(sys.argv) != 5:
@@ -93,12 +124,13 @@ def main():
     ip_remota = sys.argv[3]
     puerto_remoto = int(sys.argv[4])
 
-    hilo_server = threading.Thread(target=servidor, args=(ip_escucha, puerto_escucha))
-    hilo_server.daemon = True
-
+    hilo_server = threading.Thread(target=servidor, args=(ip_escucha, puerto_escucha), daemon=True)
     hilo_cliente = threading.Thread(target=cliente, args=(ip_remota, puerto_remoto))
+    hilo_http = threading.Thread(target=iniciar_http, daemon=True)
 
     hilo_server.start()
+    hilo_http.start()
+
     time.sleep(1)
     hilo_cliente.start()
 
