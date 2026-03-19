@@ -50,6 +50,27 @@ Punto8/
 │   └── test_grpc.py
 └── README.md
 ```
+### Archivos principales
+
+**mensaje.proto**
+
+Define el contrato de comunicación entre cliente y servidor utilizando Protocol Buffers.
+
+**mensaje_pb2.py**
+
+Archivo generado automáticamente que contiene las clases de los mensajes.
+
+**mensaje_pb2_grpc.py**
+
+Archivo generado automáticamente que contiene los stubs de cliente y servidor.
+
+**server.py**
+
+Implementación del servidor gRPC que recibe las solicitudes.
+
+**cliente.py**
+
+Implementación del cliente que realiza la llamada RPC al servidor.
 
 ---
 
@@ -94,7 +115,7 @@ python cliente.py
 
 ---
 
-# 🧪 Ejecución de tests
+# Ejecución de tests
 
 Desde la raíz del proyecto:
 
@@ -169,3 +190,76 @@ Protobuf:
 ≈ 15–20 bytes
 
 ---
+
+# Latencia de las llamadas
+
+gRPC utiliza **HTTP/2**, lo que permite:
+
+- multiplexación de conexiones
+- mejor manejo de concurrencia
+- menor overhead de comunicación
+
+Esto generalmente resulta en **menor latencia** comparado con la comunicación basada en JSON sobre sockets TCP.
+
+---
+
+# Experiencia de desarrollo
+
+## JSON + Sockets
+
+Ventajas:
+
+- implementación simple
+- fácil de inspeccionar
+
+Desventajas:
+
+- más código manual
+- mayor probabilidad de errores
+- no existe verificación de tipos
+
+---
+
+## gRPC + Protocol Buffers
+
+Ventajas:
+
+- contrato de comunicación claro
+- generación automática de código
+- mayor eficiencia
+- tipado fuerte
+
+Desventajas:
+
+- requiere definir archivos `.proto`
+- necesita compilación previa
+
+---
+
+# Conclusión
+
+La migración de **JSON sobre TCP** a **gRPC con Protocol Buffers** mejora significativamente la comunicación entre nodos en sistemas distribuidos.
+
+Las principales mejoras son:
+
+- reducción del tamaño de los mensajes
+- menor latencia
+- generación automática de código
+- mejor mantenibilidad del sistema
+
+Por estas razones, gRPC es una solución ampliamente utilizada en arquitecturas modernas de microservicios y sistemas distribuidos.
+
+
+# Arquitectura del sistema
+
+```mermaid
+flowchart LR
+
+A[Cliente gRPC\ncliente.py]
+B[gRPC Channel\nHTTP/2]
+C[Servidor gRPC\nserver.py]
+
+A -->|MensajeRequest| B
+B -->|RPC Saludo| C
+C -->|MensajeResponse| B
+B -->|Respuesta| A
