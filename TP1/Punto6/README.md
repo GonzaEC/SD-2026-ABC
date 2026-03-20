@@ -383,6 +383,31 @@ Esto permite escalar el sistema a múltiples nodos sin configuración manual.
 
 ---
 
+### Instrucciones para ejecutar el test
+## 1. Requisitos
+
+Tener instalado **Pytest**.
+
+Verificar instalación:
+
+```bash
+python -m pytest --version
+```
+
+---
+# 1. Seleccionar ubicacion del Punto 6
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP1/Punto6
+```
+# 2. Ejecutar el test
+Luego utilizar el siguiente comando:
+
+
+```bash
+python -m pytest .\tests\test_hit6.py
+```
+
 # Conclusión
 
 En este hit se introduce un **mecanismo de descubrimiento de nodos** mediante un **registro centralizado (nodo D)**.
