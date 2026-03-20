@@ -199,7 +199,7 @@ cd ./TP1/Punto6
 Ejecutar el servidor HTTP con:
 
 ```bash
-python -m uvicorn nodoD:app --host 127.0.0.1 --port 1234
+python -m uvicorn nodoD:app --host 127.0.0.1 --port 8000
 ```
 
 El nodo D quedará escuchando en:
