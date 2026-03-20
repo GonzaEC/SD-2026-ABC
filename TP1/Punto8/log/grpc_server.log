@@ -9,3 +9,6 @@
 [2026-03-19 23:52:55] Servidor gRPC escuchando en puerto 50051
 [2026-03-19 23:52:57] Mensaje recibido: saludo - hola!!!
 [2026-03-19 23:52:57] Respuesta enviada: respuesta - Hola A (cliente), soy B (servidor)
+[2026-03-20 11:53:47] Servidor gRPC escuchando en puerto 50051
+[2026-03-20 11:53:52] Mensaje recibido: saludo - hola!!!
+[2026-03-20 11:53:52] Respuesta enviada: respuesta - Hola A (cliente), soy B (servidor)

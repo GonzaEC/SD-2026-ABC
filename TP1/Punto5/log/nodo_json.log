@@ -45,3 +45,37 @@
 [2026-03-19 23:54:26] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
 [2026-03-19 23:54:26] Mensaje recibido: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
 [2026-03-19 23:54:26] Respuesta enviada: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-20 11:33:16] Servidor escuchando en 127.0.0.1:5000
+[2026-03-20 11:33:17] Cliente conectado al servidor
+[2026-03-20 11:33:17] Mensaje enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:33:32] Servidor escuchando en 127.0.0.1:5001
+[2026-03-20 11:33:33] Cliente conectado al servidor
+[2026-03-20 11:33:33] Mensaje enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:36:16] Servidor escuchando en 127.0.0.1:5000
+[2026-03-20 11:36:19] No se pudo conectar a 127.0.0.1:5001. Reintentando en 3 segundos...
+[2026-03-20 11:36:21] Servidor escuchando en 127.0.0.1:5001
+[2026-03-20 11:36:22] Conectado exitosamente al servidor en 127.0.0.1:5001
+[2026-03-20 11:36:22] Cliente conectado desde ('127.0.0.1', 59469)
+[2026-03-20 11:36:22] Mensaje JSON enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:36:22] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:36:22] Respuesta JSON recibida: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-20 11:36:22] Cliente conectado desde ('127.0.0.1', 59470)
+[2026-03-20 11:36:22] Conectado exitosamente al servidor en 127.0.0.1:5000
+[2026-03-20 11:36:22] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:36:22] Mensaje JSON enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:36:22] Respuesta JSON recibida: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-20 11:39:03] Servidor escuchando en 127.0.0.1:5000
+[2026-03-20 11:39:06] No se pudo conectar a 127.0.0.1:5001. Reintentando en 3 segundos...
+[2026-03-20 11:39:08] Servidor escuchando en 127.0.0.1:5001
+[2026-03-20 11:39:09] Cliente conectado desde ('127.0.0.1', 59544)
+[2026-03-20 11:39:09] Conectado exitosamente al servidor en 127.0.0.1:5000
+[2026-03-20 11:39:09] Mensaje JSON enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:39:09] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:39:09] Respuesta JSON recibida: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-20 11:39:09] Respuesta enviada: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-20 11:39:09] Cliente conectado desde ('127.0.0.1', 59545)
+1:5001
+[2026-03-20 11:39:09] Mensaje JSON enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:39:09] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-20 11:39:09] Respuesta enviada: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+r)'}

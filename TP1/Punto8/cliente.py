@@ -36,7 +36,7 @@ def run():
 
     log_evento(f"Respuesta recibida: {response.tipo} - {response.mensaje}")
 
-    return response  # 👈 clave para tests
+    return response  
 
 
 if __name__ == "__main__":

@@ -86,3 +86,21 @@
 [2026-03-19 23:55:49] Mensaje recibido: hola!!!
 [2026-03-19 23:55:49] Respuesta recibida: Hola A (cliente), soy B (servidor)
 [2026-03-19 23:55:49] Respuesta enviada
+[2026-03-20 11:26:39] Servidor escuchando en 127.0.0.1:5000
+[2026-03-20 11:26:42] Conexión fallida. Reintentando en 3 segundos...
+[2026-03-20 11:26:44] Servidor escuchando en 127.0.0.1:5001
+[2026-03-20 11:26:45] Cliente conectado desde ('127.0.0.1', 59222)
+[2026-03-20 11:26:45] Mensaje recibido: hola!!!
+[2026-03-20 11:26:45] Respuesta enviada
+ Hola A (cliente), soy B (servidor)
+[2026-03-20 11:26:45] Cliente conectado desde ('127.0.0.1', 59223)
+[2026-03-20 11:26:45] Mensaje recibido: hola!!!
+[2026-03-20 11:26:45] Mensaje enviado: hola!!!
+[2026-03-20 11:26:45] Respuesta enviada
+[2026-03-20 11:26:45] Respuesta recibida: Hola A (cliente), soy B (servidor)
+[2026-03-20 11:33:17] Cliente conectado desde ('127.0.0.1', 59382)
+[2026-03-20 11:33:17] Mensaje recibido: {"tipo": "saludo", "mensaje": "hola!!!"}
+[2026-03-20 11:33:17] Respuesta enviada
+[2026-03-20 11:33:33] Cliente conectado desde ('127.0.0.1', 59394)
+[2026-03-20 11:33:33] Mensaje recibido: {"tipo": "saludo", "mensaje": "hola!!!"}
+[2026-03-20 11:33:33] Respuesta enviada

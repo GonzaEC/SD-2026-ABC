@@ -38,11 +38,11 @@ estado = {
 def cliente(IP, PUERTO): 
     while True:
         try:
-            cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            cliente.connect((IP, PUERTO))
+            sock_cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock_cliente.connect((IP, PUERTO))
 
             estado["cliente"] = "OK"
-            log_evento("Cliente conectado al servidor")
+            log_evento(f"Conectado exitosamente al servidor en {IP}:{PUERTO}")
 
             msj = {
                 "tipo": "saludo",
@@ -50,21 +50,37 @@ def cliente(IP, PUERTO):
             }
 
             msj_str = json.dumps(msj)
-            cliente.send(msj_str.encode('utf-8'))
-            log_evento(f"Mensaje enviado: {msj}")
+            sock_cliente.send(msj_str.encode('utf-8'))
+            log_evento(f"Mensaje JSON enviado: {msj}")
 
-            datos = cliente.recv(1024)
-            datos_json = json.loads(datos.decode('utf-8'))
+            datos = sock_cliente.recv(1024)
+            
+            if not datos:
+                log_evento("Error: El servidor cerró la conexión sin enviar datos.")
+                sock_cliente.close()
+                time.sleep(3)
+                continue
+            
+            try:
+                # Intentar decodificar el JSON
+                datos_json = json.loads(datos.decode('utf-8'))
+                log_evento(f"Respuesta JSON recibida: {datos_json}")
+                
+                sock_cliente.close()
+                return datos_json # Salida exitosa
 
-            log_evento(f"Mensaje recibido: {datos_json}")
-
-            cliente.close()
-            return datos_json
+            except json.JSONDecodeError:
+                log_evento("Error: La respuesta del servidor no es un JSON válido.")
+                sock_cliente.close()
+                time.sleep(3)
+                continue
 
         except (ConnectionRefusedError, ConnectionResetError, ConnectionError):
             estado["cliente"] = "REINTENTANDO"
-            log_evento("Conexión perdida. Reintentando en 3 segundos...")
+            log_evento(f"No se pudo conectar a {IP}:{PUERTO}. Reintentando en 3 segundos...")
             time.sleep(3)
+
+
 
 # ---------------- SERVIDOR ----------------
 
