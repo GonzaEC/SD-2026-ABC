@@ -1,7 +1,4 @@
 import socket
-HOST = '127.0.0.1'
-PUERTO = 333
-
 import socket
 import logging
 import os
@@ -52,7 +49,7 @@ def status():
 # -------------------
 # Servidor TCP
 # -------------------
-def iniciar_servidor(estado):
+def iniciar_servidor(estado, stop):
     global estado_servicio
     estado_servicio["Servidor TCP"] = "Iniciando" 
     #Creo el socket
@@ -61,7 +58,7 @@ def iniciar_servidor(estado):
     SocketServer.listen(1)
 
     logging.info("Servidor esperando conexiones...")
-    while True:
+    while not stop.is_set():
         estado["valor"] = "Servidor esperando conexiones..."
         try:
             conexion, direccion = SocketServer.accept()
@@ -82,8 +79,14 @@ def iniciar_servidor(estado):
 
             conexion.close()
             estado_servicio["Servidor TCP"] = "OK"
+            SocketServer.settimeout(1) #utilizado solo en tests
         except ConnectionResetError:
             logging.info("El cliente cerro la conexion")
+        except socket.timeout:
+            pass
+    if(stop.is_set()):
+        SocketServer.close()
+     
 
 # -------------------
 # Ejecutar FastAPI y TCP en paralelo
@@ -95,6 +98,7 @@ def main():
         daemon=True
     )
     api_thread.start()
+    iniciar_servidor(estadoV,threading.Event())
 
     
     # Ejecutar servidor TCP
@@ -102,5 +106,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    iniciar_servidor(estadoV)
+    
     
