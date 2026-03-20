@@ -221,7 +221,7 @@ Se implementan pruebas unitarias y de integración utilizando `unittest`.
 ## Ejecutar tests
 
 ```bash
-python -m unittest discover -s tests -t . -v
+python -m pytest -v tests/test_nodo_json.py
 ```
 
 Las pruebas verifican:

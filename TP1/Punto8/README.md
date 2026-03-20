@@ -120,7 +120,7 @@ python cliente.py
 Desde la raíz del proyecto:
 
 ```bash
-python -m unittest discover -s tests -t . -v
+python -m pytest -v tests/test_grpc.py
 ```
 
 Importante:

@@ -309,7 +309,7 @@ tests/
 Desde la raíz del proyecto ejecutar:
 
 ```bash
-python -m unittest discover -s tests -t . -v
+python -m pytest -v tests/test_nodo.py 
 ```
 
 Las pruebas cubren:
