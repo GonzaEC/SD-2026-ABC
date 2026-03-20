@@ -24,7 +24,12 @@ El servidor ahora puede detectar esta situación y continuar esperando nuevas co
 
 - Python 3
 - Biblioteca estándar `socket`
-- Biblioteca `time` para manejo de reintentos en el cliente
+- Biblioteca `time` para control de reintentos
+- `logging` para el registro de logs
+- `threading` para el endpoint y testeo
+- `Queue` para el testeo
+- `FastAPI` para el endpoint
+- `uvicorn` para el endpoint 
 
 ---
 
@@ -33,6 +38,8 @@ El servidor ahora puede detectar esta situación y continuar esperando nuevas co
 ```
 Hit3/
 │
+├── logs/
+├── tests/
 ├── cliente.py
 ├── servidor.py
 └── README.md
@@ -94,10 +101,25 @@ Verificar instalación:
 ```bash
 python --version
 ```
+Instalar dependencias:
+
+```bash
+cd ./TP1
+```
+
+```
+pip install -r requirements.txt
+```
 
 ---
+---
+# 2. Seleccionar ubicacion del Punto 3
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP1/Punto3
+```
 
-# 2. Ejecutar el servidor
+# 3. Ejecutar el servidor
 
 Abrir una terminal y ejecutar:
 
@@ -115,7 +137,7 @@ El servidor permanecerá ejecutándose continuamente.
 
 ---
 
-# 3. Ejecutar el cliente
+# 4. Ejecutar el cliente
 
 En otra terminal ejecutar:
 
@@ -151,11 +173,6 @@ Salida posible en el servidor:
 El cliente cerro la conexión
 ```
 
-o
-
-```
-El cliente cerro la conexion
-```
 
 El servidor continuará esperando nuevas conexiones.
 

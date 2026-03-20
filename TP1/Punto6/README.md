@@ -31,11 +31,16 @@ De esta forma, los nodos **ya no necesitan conocer manualmente a sus pares**, pe
 - `threading`
 - `json`
 - `requests`
+- `time`
+- `logging`
+- `Queue`
 
 ### Nodo D
 - Python 3
 - `FastAPI`
 - `uvicorn`
+- `time`
+- `logging`
 
 ---
 
@@ -44,6 +49,8 @@ De esta forma, los nodos **ya no necesitan conocer manualmente a sus pares**, pe
 ```
 Hit6/
 │
+├── logs/
+├── tests/
 ├── nodoC.py
 ├── nodoD.py
 └── README.md
@@ -77,17 +84,23 @@ Nodo de registro que:
 ```mermaid
 flowchart TD
 
-NodoC1 --> NodoD
-NodoC2 --> NodoD
-NodoC3 --> NodoD
+D[Nodo D<br/>Registro + /health]
 
-NodoD --> NodoC1
-NodoD --> NodoC2
-NodoD --> NodoC3
+  C1[C1<br/>Puerto aleatorio]
+  C2[C2<br/>Puerto aleatorio]
+  C3[C3<br/>Puerto aleatorio]
+  C4[C4<br/>Puerto aleatorio]
 
-NodoC1 --> NodoC2
-NodoC2 --> NodoC3
-NodoC3 --> NodoC1
+  %% Registro hacia Nodo D
+  C1 -. Registro (IP + puerto) .-> D
+  C2 -. Registro (IP + puerto) .-> D
+  C3 -. Registro (IP + puerto) .-> D
+  C4 -. Registro (IP + puerto) .-> D
+
+  %% Comunicación entre pares (TCP)
+  C1 <-->|TCP| C2
+  C2 <-->|TCP| C3
+  C3 <-->|TCP| C4
 ```
 
 El nodo **D** funciona como un **servicio de descubrimiento de nodos**.
@@ -164,15 +177,24 @@ Cada nodo registrado incluye:
 
 ## 1. Instalar dependencias
 
-Instalar las librerías necesarias:
 
 ```bash
-pip install fastapi uvicorn requests
+cd ./TP1
 ```
 
+```
+pip install -r requirements.txt
+```
 ---
 
-# 2. Ejecutar el nodo D (registro)
+---
+# 2. Seleccionar ubicacion del Punto 6
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP1/Punto6
+```
+
+# 3. Ejecutar el nodo D (registro)
 
 Ejecutar el servidor HTTP con:
 
@@ -188,7 +210,7 @@ http://localhost:8000
 
 ---
 
-# 3. Verificar health check
+# 4. Verificar health check
 
 Abrir en el navegador:
 
@@ -208,7 +230,7 @@ Respuesta esperada:
 
 ---
 
-# 4. Ejecutar nodos C
+# 5. Ejecutar nodos C
 
 En nuevas terminales ejecutar:
 
@@ -371,7 +393,6 @@ Se eligió **FastAPI** para implementar el nodo D porque:
 
 Se implementó `/health` para permitir monitorear el estado del sistema.
 
-Esto es una práctica común en sistemas distribuidos y microservicios.
 
 ---
 
@@ -395,12 +416,12 @@ python -m pytest --version
 ```
 
 ---
-# 1. Seleccionar ubicacion del Punto 6
+# 2. Seleccionar ubicacion del Punto 6
 Abrir una terminal y ejecutar:
 ```bash
 cd ./TP1/Punto6
 ```
-# 2. Ejecutar el test
+# 3. Ejecutar el test
 Luego utilizar el siguiente comando:
 
 
