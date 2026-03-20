@@ -248,6 +248,31 @@ Esto mejora la robustez del sistema.
 
 ---
 
+### Instrucciones para ejecutar el test
+## 1. Requisitos
+
+Tener instalado **Pytest**.
+
+Verificar instalación:
+
+```bash
+python -m pytest --version
+```
+
+---
+# 1. Seleccionar ubicacion del Punto 3
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP1/Punto3
+```
+# 2. Ejecutar el test
+Luego utilizar el siguiente comando:
+
+
+```bash
+python -m pytest .\tests\test_hit3.py
+```
+
 # Conclusión
 
 En este hit se introduce tolerancia a fallos del lado del servidor, permitiendo que el proceso continúe funcionando incluso cuando un cliente se desconecta inesperadamente.

@@ -243,6 +243,30 @@ Se eligió un intervalo de **3 segundos** entre reintentos para evitar:
 Este tipo de estrategia es común en sistemas distribuidos.
 
 ---
+### Instrucciones para ejecutar el test
+## 1. Requisitos
+
+Tener instalado **Pytest**.
+
+Verificar instalación:
+
+```bash
+python -m pytest --version
+```
+
+---
+# 1. Seleccionar ubicacion del Punto 2
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP1/Punto2
+```
+# 2. Ejecutar el test
+Luego utilizar el siguiente comando:
+
+
+```bash
+python -m pytest .\tests\test_hit2.py
+```
 
 # Conclusión
 
