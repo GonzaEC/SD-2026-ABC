@@ -45,6 +45,7 @@ TP1/
 │
 ├── informe.txt
 ├── requirements.txt
+├── README.md
 │
 ├── Punto1/
 │   ├── cliente.py
