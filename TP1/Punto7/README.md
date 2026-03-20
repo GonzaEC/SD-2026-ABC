@@ -54,7 +54,7 @@ Nodo coordinador que:
 # Estructura del proyecto
 
 ```
-Hit7/
+Punto7/
 │
 ├── nodoC.py
 ├── nodoD.py
@@ -96,7 +96,7 @@ El nodo **D** maneja dos registros diferentes:
 Cada **60 segundos** ocurre la transición:
 
 ```
-nodos_siguientes → nodos_activos
+nodos_activos = nodos_siguientes
 nodos_siguientes = []
 ```
 
@@ -237,6 +237,8 @@ pip install fastapi uvicorn requests
 Iniciar el coordinador:
 
 ```bash
+cd TP1
+cd Pnto7
 python -m uvicorn nodoD:app --host 127.0.0.1 --port 8000
 ```
 
@@ -249,6 +251,8 @@ Esto inicia el servidor HTTP del nodo D.
 En nuevas terminales ejecutar:
 
 ```bash
+cd TP1
+cd Pnto7
 python nodoC.py 127.0.0.1 8000
 ```
 

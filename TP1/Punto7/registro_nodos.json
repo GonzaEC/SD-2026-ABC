@@ -1,9 +1,4 @@
 {
-    "nodos_activos": [
-        {
-            "ip": "127.0.0.1",
-            "puerto": 6000
-        }
-    ],
+    "nodos_activos": [],
     "nodos_siguientes": []
 }

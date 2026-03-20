@@ -92,14 +92,23 @@ Verificar instalación:
 ```bash
 python --version
 ```
+## 2. Instalación de dependencias
+Antes de ejecutar el servidor y el cliente, posicionarse en la carpeta del proyecto (TP1) e instalar las dependencias:
+
+```bash
+cd TP1
+pip install -r requirements.txt
+```
 
 ---
 
-# 2. Ejecutar el servidor
+# 3. Ejecutar el servidor
 
 Abrir una terminal y ejecutar:
 
 ```bash
+cd TP1
+cd Punto1
 python servidor.py
 ```
 
@@ -123,6 +132,8 @@ PUERTO: 333
 En otra terminal ejecutar:
 
 ```bash
+cd TP1
+cd Punto1
 python cliente.py
 ```
 

@@ -4,7 +4,7 @@ Repositorio correspondiente a la materia **Sistemas Distribuidos y Programación
 
 ## Grupo ABC
 
--
+- Luca Bautista Cacciatore - 190127
 - Ian Lucas Ott - 191800
 - Gonzalo Echeverria Crenna -195155
 

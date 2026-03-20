@@ -33,10 +33,6 @@ def log_evento(mensaje):
     logs_memoria.append(linea)
     logging.info(mensaje)
 
-# Cofiguracion de la conexion TCP para el servidor
-HOST = '0.0.0.0'
-PUERTO = 333
-
 # Guardo el estado de los servicios para consultas posteriores
 estado_servicio = {
     "Servidor TCP": "Detenido",
@@ -72,6 +68,11 @@ def logs_archivo_endpoint():
             return "".join(f.readlines()[-20:])
     except FileNotFoundError:
         return "No hay logs todavía"
+    
+
+# Cofiguracion de la conexion TCP para el servidor
+HOST = '0.0.0.0'
+PUERTO = 333
 
 # Servidor TCP
 def iniciar_servidor():

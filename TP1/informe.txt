@@ -1,0 +1,152 @@
+INFORME TP 1
+
+Este trabajo práctico tiene como objetivo el desarrollo progresivo de un sistema distribuido,
+incorporando conceptos fundamentales como comunicación cliente-servidor, procesamiento asincrónico,
+descubrimiento de nodos y serialización de datos.
+A lo largo de los distintos HITs se construyeron múltiples componentes (nodos A, B, C y D),
+evolucionando desde una comunicación TCP básica hasta una arquitectura distribuida con registro de nodos,
+ventanas de inscripción y comunicación mediante gRPC.
+
+Uso de IA
+Utilizamos chatGPT para consultas conceptuales, comprender bien lo que pedía cada hit y resolver dudas sobre las consignas.
+En algunos hits la utilizamos para generación de código base cuando nos enfrentábamos a problemas o uso de librerías que desconocíamos.
+El uso de la IA fue beneficioso ya que nos permitió comprender de mejor manera los temas que abarcan los distintos hits
+y el código que teníamos que desarrollar.
+
+Arquitectura del sistema
+Componentes
+•	Nodo A (cliente): Inicia la comunicación enviando mensajes.
+•	Nodo B (servidor): Escucha conexiones y responde.
+•	Nodo C (nodo híbrido): Actúa como cliente y servidor simultáneamente.
+•	Nodo D (registro de contactos): Centraliza la información de nodos activos y coordina ventanas de inscripción.
+
+Estructura del proyecto
+
+.gitignore
+README.md
+TP1/
+│
+├── informe.txt
+├──requirements.txt
+│
+├── Punto1/
+│   ├── cliente.py
+│   ├── servidor.py
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+├── Punto2/
+│   ├── cliente.py
+│   ├── servidor.py
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+├── Punto3/
+│   ├── cliente.py
+│   ├── servidor.py
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+├── Punto4/
+│   ├── nodo.py
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+├── Punto5/
+│   ├── nodo.py
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+├── Punto6/
+│   ├── nodoC.py
+│   ├── nodoD.py
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+├── Punto7/
+│   ├── nodoC.py
+│   ├── nodoD.py
+│   ├── registro_nodos.json
+│   ├── README.md
+│   ├── logs/
+│   └── tests/
+│
+└── Punto8/
+    ├── cliente.py
+    ├── server.py
+    ├── mensaje.proto
+    ├── mensaje_pb2.py
+    ├── mensaje_pb2_grpc.py
+    ├── README.md
+    ├── logs/
+    └── tests/
+
+Desarrollo por HIT
+
+Hit #1, Comunicación TCP básica
+Se implementó: Servidor TCP que escucha conexiones y Cliente TCP que envía un saludo y espera respuesta.
+Se trabajo sobre el modelo cliente-servidor y comunicación sincrónica.
+
+Hit #2, Reconexión del cliente
+Se implementaron reintentos automáticos ante caída del servidor.
+Mejora la tolerancia a fallos.
+
+Hit #3, Servidor resiliente
+Se modificó el servidor para mantenerse activo ante desconexión del cliente.
+Trabajando sobre el concepto de alta disponibilidad básica.
+
+Hit #4, Nodo C bidireccional
+Se unificaron cliente y servidor en un único proceso, permitiendo la comunicación bidireccional.
+
+Hit #5, Serialización JSON
+Se implementó el envio de mensajes en formato JSON.
+
+Hit #6, Nodo D (registro de contactos)
+Se desarrolló el nodo D, uso de API REST con FastAPI y registro dinámico de nodos C.
+
+Hit #7, Sistema de inscripciones
+Se implementaron ventanas de inscripción de 1 minuto y la separación entre nodos activos y nodos futuros junto a la persistencia
+en archivo JSON.
+
+Hit #8, gRPC y Protocol Buffers
+Se reemplazó JSON por Protobuf.
+
+CI/CD 
+Se implementó pipeline con GitHub Actions, este incluye instalación de dependencias y ejecución de tests, entre otras funcionalidades.
+
+Seguridad
+Se aplicaron buenas prácticas de seguridad 
+•	.gitignore para evitar credenciales
+•	Uso de secrets en CI/CD
+
+Pruebas y Logs
+Se realizaron un conjunto de pruebas unitarias y también de integración, estos tests se encuentra en la carpeta tests/
+de cada punto correspondiente.
+También verificamos el estado actual y correcto funcionamiento de los ejercicios mediante la validación de endpoints.
+Implementamos logs en archivos y también en memoria, de manera que estos puedan ser consultados durante la ejecución de los ejercicios
+y también posteriormente, consultando los archivos o mediante endpoints.
+
+Conclusiones
+El desarrollo permitió comprender en profundidad:
+•	La complejidad de sistemas distribuidos
+•	La importancia del desacoplamiento entre los distintos nodos y su impacto en la escalabilidad y mantenibilidad.
+•	El modelo cliente-servidor y su evolución hacia arquitecturas más complejas.
+•	La relevancia de las pruebas (tests) y los mecanismos de logging para garantizar la correcta operación y facilitar
+    el diagnóstico de errores.
+•	El uso de endpoints HTTP, tecnología que no había sido utilizada previamente, pero que resultó clave para la observabilidad
+    y monitoreo del sistema.
+
+A lo largo del desarrollo, se logró evolucionar desde una arquitectura simple cliente-servidor hacia un sistema distribuido
+más completo, dinámico, escalable y parcialmente tolerante a fallos, incorporando mecanismos de descubrimiento de nodos,
+comunicación estructurada y coordinación temporal.
+
+
+
+
+
