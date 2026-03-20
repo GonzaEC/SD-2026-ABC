@@ -69,3 +69,20 @@
  Hola A (cliente), soy B (servidor)
 [2026-03-19 19:14:49] Test archivo
 [2026-03-19 19:14:49] Test memoria
+[2026-03-19 23:25:50] Servidor escuchando en 127.0.0.1:6001
+[2026-03-19 23:25:51] Cliente conectado desde ('127.0.0.1', 62484)
+[2026-03-19 23:25:51] Mensaje recibido: hola!!!
+[2026-03-19 23:25:51] Mensaje enviado: hola!!!
+[2026-03-19 23:25:51] Respuesta enviada
+[2026-03-19 23:25:51] Respuesta recibida: Hola A (cliente), soy B (servidor)
+[2026-03-19 23:25:51] Test archivo
+[2026-03-19 23:25:51] Test memoria
+[2026-03-19 23:55:48] Test memoria
+[2026-03-19 23:55:48] Test archivo
+[2026-03-19 23:55:48] Servidor escuchando en 127.0.0.1:6001
+[2026-03-19 23:55:49] Cliente conectado al servidor
+[2026-03-19 23:55:49] Cliente conectado desde ('127.0.0.1', 64808)
+[2026-03-19 23:55:49] Mensaje enviado: hola!!!
+[2026-03-19 23:55:49] Mensaje recibido: hola!!!
+[2026-03-19 23:55:49] Respuesta recibida: Hola A (cliente), soy B (servidor)
+[2026-03-19 23:55:49] Respuesta enviada

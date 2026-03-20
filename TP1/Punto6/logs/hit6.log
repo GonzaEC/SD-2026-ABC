@@ -1,0 +1,38 @@
+2026-03-19 23:31:10,230 - INFO - Se registro un nuevo nodo C
+2026-03-19 23:31:10,230 - INFO - Se registro un nuevo nodo C
+2026-03-19 23:31:10,230 - INFO - Se registro un nuevo nodo C
+2026-03-19 23:31:10,232 - INFO - Servidor esperando conexiones...
+2026-03-19 23:31:10,233 - INFO - Servidor esperando conexiones...
+2026-03-19 23:31:10,233 - INFO - Servidor esperando conexiones...
+2026-03-19 23:31:11,233 - INFO - [CLIENTE - Nodo C] Iniciando cliente...
+2026-03-19 23:31:11,234 - INFO - [CLIENTE - Nodo C] Iniciando cliente...
+2026-03-19 23:31:11,234 - INFO - [CLIENTE - Nodo C] Iniciando cliente...
+2026-03-19 23:31:11,234 - INFO - Conectado con el servidor
+2026-03-19 23:31:11,234 - INFO - Conectado con: ('127.0.0.1', 63132)
+2026-03-19 23:31:11,234 - INFO - Conectado con el servidor
+2026-03-19 23:31:11,234 - INFO - Conectado con: ('127.0.0.1', 63133)
+2026-03-19 23:31:11,234 - INFO - Mensaje enviado!!!
+2026-03-19 23:31:11,235 - INFO - Conectado con el servidor
+2026-03-19 23:31:11,235 - INFO - Mensaje del cliente: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+2026-03-19 23:31:11,235 - INFO - Mensaje enviado!!!
+2026-03-19 23:31:11,235 - INFO - Mensaje del cliente: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+2026-03-19 23:31:11,235 - INFO - Mensaje enviado!!!
+2026-03-19 23:31:11,235 - INFO - Mensaje recibido del servidor: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+2026-03-19 23:31:11,236 - INFO - Mensaje recibido del servidor: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+2026-03-19 23:31:11,236 - INFO - Conectado con: ('127.0.0.1', 63134)
+2026-03-19 23:31:11,236 - INFO - [CLIENTE - Nodo C] Iniciando cliente...
+2026-03-19 23:31:11,236 - INFO - Mensaje del cliente: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+2026-03-19 23:31:11,236 - INFO - [CLIENTE - Nodo C] Iniciando cliente...
+2026-03-19 23:31:11,237 - INFO - Conectado con el servidor
+2026-03-19 23:31:11,237 - INFO - Mensaje recibido del servidor: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+2026-03-19 23:31:11,237 - INFO - Conectado con: ('127.0.0.1', 63135)
+2026-03-19 23:31:11,238 - INFO - Conectado con el servidor
+2026-03-19 23:31:11,238 - INFO - Conectado con: ('127.0.0.1', 63136)
+2026-03-19 23:31:11,239 - INFO - Mensaje enviado!!!
+2026-03-19 23:31:11,239 - INFO - [CLIENTE - Nodo C] Iniciando cliente...
+2026-03-19 23:31:11,239 - INFO - Mensaje del cliente: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+2026-03-19 23:31:11,239 - INFO - Mensaje enviado!!!
+2026-03-19 23:31:11,240 - INFO - Mensaje del cliente: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+2026-03-19 23:31:11,241 - INFO - Conectado con el servidor
+2026-03-19 23:31:11,241 - INFO - Mensaje recibido del servidor: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+2026-03-19 23:31:11,242 - INFO - Conectado con: ('127.0.0.1', 63137)

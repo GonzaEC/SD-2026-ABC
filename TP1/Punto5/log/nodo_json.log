@@ -28,3 +28,20 @@
 [2026-03-19 19:05:08] Mensaje recibido: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
 [2026-03-19 19:05:08] test archivo json
 [2026-03-19 19:05:08] test json
+[2026-03-19 23:25:57] Servidor escuchando en 127.0.0.1:7000
+[2026-03-19 23:25:58] Cliente conectado desde ('127.0.0.1', 62514)
+[2026-03-19 23:25:58] Mensaje enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-19 23:25:58] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-19 23:25:58] Mensaje recibido: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-19 23:25:58] Respuesta enviada: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-19 23:25:58] test archivo json
+[2026-03-19 23:25:58] test json
+[2026-03-19 23:54:25] test json
+[2026-03-19 23:54:25] test archivo json
+[2026-03-19 23:54:25] Servidor escuchando en 127.0.0.1:7000
+[2026-03-19 23:54:26] Cliente conectado al servidor
+[2026-03-19 23:54:26] Cliente conectado desde ('127.0.0.1', 64774)
+[2026-03-19 23:54:26] Mensaje enviado: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-19 23:54:26] Mensaje recibido: {'tipo': 'saludo', 'mensaje': 'hola!!!'}
+[2026-03-19 23:54:26] Mensaje recibido: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
+[2026-03-19 23:54:26] Respuesta enviada: {'tipo': 'respuesta', 'mensaje': 'Hola A (cliente), soy B (servidor)'}
