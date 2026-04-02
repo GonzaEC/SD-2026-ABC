@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 import ast
 import logging
 import os
+import json
 
 # -------------------
 # Carpeta de logs relativa al script
@@ -32,6 +33,14 @@ async def ejecutarTarea(peticion: Request):
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
         for valor in lista:
             resultado += valor
+        
+        adicional = payload.get("adicional",{})
+        redondeo = adicional.get("redondeo",-1)
+        absoluto = adicional.get("absoluto",False)
+        if(redondeo >= 0):
+            resultado = round(resultado, redondeo)
+        if(absoluto):
+            resultado = abs(resultado)
         logging.info({"resultado": resultado})
         return {"resultado": resultado}
     if payload["calculo"] == metodos[1]:
@@ -40,6 +49,14 @@ async def ejecutarTarea(peticion: Request):
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
         for valor in lista:
             resultado -= valor
+        
+        adicional = payload.get("adicional",{})
+        redondeo = adicional.get("redondeo",-1)
+        absoluto = adicional.get("absoluto",False)
+        if(redondeo >= 0):
+            resultado = round(resultado, redondeo)
+        if(absoluto):
+            resultado = abs(resultado)
         logging.info({"resultado": resultado})
         return {"resultado": resultado}
     if payload["calculo"] == metodos[2]:
@@ -48,6 +65,14 @@ async def ejecutarTarea(peticion: Request):
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
         for valor in lista:
             resultado *= valor
+        
+        adicional = payload.get("adicional",{})
+        redondeo = adicional.get("redondeo",-1)
+        absoluto = adicional.get("absoluto",False)
+        if(redondeo >= 0):
+            resultado = round(resultado, redondeo)
+        if(absoluto):
+            resultado = abs(resultado)
         logging.info({"resultado": resultado})
         return {"resultado": resultado}
     if payload["calculo"] == metodos[3]:
@@ -56,6 +81,14 @@ async def ejecutarTarea(peticion: Request):
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
         for valor in lista:
             resultado /= valor
+        
+        adicional = payload.get("adicional",{})
+        redondeo = adicional.get("redondeo",-1)
+        absoluto = adicional.get("absoluto",False)
+        if(redondeo >= 0):
+            resultado = round(resultado, redondeo)
+        if(absoluto):
+            resultado = abs(resultado)
         logging.info({"resultado": resultado})
         return {"resultado": resultado}
     logging.info({"error": "tarea no soportada"})

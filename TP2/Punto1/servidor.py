@@ -34,31 +34,46 @@ estado_servicio = {
 payload = {
     "calculo": "vacio",
     "parametros": "vacio",
-    "adicional": "vacio",
+    "adicional": {
+    "redondeo": -1,
+    "absoluto": False
+    },
     "imagen": "imagen docker"
 }
+
 app = FastAPI()
 tiempoInicio = time.time()
-def iniciar_servidor(IP,Puerto):
-    uvicorn.run("servidor:app",host=IP,port=Puerto,log_level="info")
-    logging.info(f"Se inicio correctamente el servidor")
-    estado_servicio["Servidor"] = "OK"
+logging.info(f"Se inicio correctamente el servidor")
+estado_servicio["Servidor"] = "OK"
     
 @app.get("/getRemoteTask")
 async def ejecutarTareaRemota(calculo,parametros,adicional,imagen):
     payload["calculo"] = calculo
     payload["parametros"] = parametros
-    payload["adicional"] = adicional
     payload[imagen] = imagen
-    logging.info(f"Se esta procesando una nueva tarea mediante POST: %s",payload)
+    logging.info(f"Se esta procesando una nueva tarea mediante GET: %s",payload)
     procesoActual = subprocess.run(
-        ["docker","run","-d","-i","--name","servicio-tarea" ,"--rm","-p","8132:8132",imagen],
+        ["docker","run","-d","--network","red_docker","-i","--name","servicio-tarea" ,"-p","8132:8132",imagen],
         capture_output=True,
         text=True
     )
+    if procesoActual.returncode != 0:
+                #En caso que el contenedor ya este en uso pero en estado exited simplemente lo inicia
+        procesoActual = subprocess.run(
+        ["docker","start","servicio-tarea"],
+        capture_output=True,
+        text=True
+        )
+        if procesoActual.returncode != 0:
+            return {"estado": "error", "detalle": procesoActual.stderr}
     
     time.sleep(2)
-    peticion = requests.post("http://localhost:8132/ejecutarTarea",json=payload, stream = True)
+    peticion = requests.post("http://servicio-tarea:8132/ejecutarTarea",json=payload, stream = True)
+    procesoActual = subprocess.run(
+        ["docker","stop","servicio-tarea"],
+        capture_output=True,
+        text=True
+    )
     try:
         return peticion.json()
     except:
@@ -73,13 +88,26 @@ async def ejecutarTareaRemota(peticion: Request):
     imagen = payload["imagen"]
     logging.info(f"Se esta procesando una nueva tarea mediante POST: %s",payload)
     procesoActual = subprocess.run(
-        ["docker","run","-d","-i","--name","servicio-tarea" ,"--rm","-p","8132:8132",imagen],
+        ["docker","run","-d","--network","red_docker","-i","--name","servicio-tarea" ,"-p","8132:8132",imagen],
         capture_output=True,
         text=True
     )
-    
+    if procesoActual.returncode != 0:
+                #En caso que el contenedor ya este en uso pero en estado exited simplemente lo inicia
+        procesoActual = subprocess.run(
+        ["docker","start","servicio-tarea"],
+        capture_output=True,
+        text=True
+        )
+        if procesoActual.returncode != 0:
+            return {"estado": "error", "detalle": procesoActual.stderr}
     time.sleep(2)
-    peticion = requests.post("http://localhost:8132/ejecutarTarea",json=payload, stream = True)
+    peticion = requests.post("http://servicio-tarea:8132/ejecutarTarea",json=payload, stream = True)
+    procesoActual = subprocess.run(
+        ["docker","stop","servicio-tarea"],
+        capture_output=True,
+        text=True
+    )
     try:
         return peticion.json()
     except:
@@ -102,13 +130,27 @@ def estado_Actual():
 async def obtenerMetodos(imagen):
     logging.info(f"Se estan solicitando los metodos")
     procesoActual = subprocess.run(
-        ["docker","run","-d","-i","--name","servicio-tarea" ,"--rm","-p","8132:8132",imagen],
+        ["docker","run","-d","--network","red_docker","-i","--name","servicio-tarea" ,"-p","8132:8132",imagen],
         capture_output=True,
         text=True
     )
+    if procesoActual.returncode != 0:
+        #En caso que el contenedor ya este en uso pero en estado exited simplemente lo inicia
+        procesoActual = subprocess.run(
+        ["docker","start","servicio-tarea"],
+        capture_output=True,
+        text=True
+        )
+        if procesoActual.returncode != 0:
+            return {"estado": "error", "detalle": procesoActual.stderr}
     
     time.sleep(2)
-    peticion = requests.get("http://localhost:8132/getMetodos", stream = True)
+    peticion = requests.get("http://servicio-tarea:8132/getMetodos", stream = True)
+    procesoActual = subprocess.run(
+        ["docker","stop","servicio-tarea"],
+        capture_output=True,
+        text=True
+    )
     try:
         return peticion.json()
     except:
@@ -116,6 +158,3 @@ async def obtenerMetodos(imagen):
             "estado": "error",
             "detalle": peticion.text 
         }
-
-if __name__ == "__main__":
-    iniciar_servidor("127.0.0.1",7685)

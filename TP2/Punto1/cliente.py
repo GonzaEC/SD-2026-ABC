@@ -6,6 +6,7 @@ import json
 import requests
 import logging
 import os
+import ast
 
 # -------------------
 # Carpeta de logs relativa al script
@@ -29,26 +30,37 @@ logging.basicConfig(
 tarea = {
     "calculo": "vacio",
     "parametros": "vacio",
-    "adicional": "vacio",
+    "adicional": {
+    "redondeo": -1,
+    "absoluto": False
+    },
     "imagen": "imagen docker"
 }
+
 
 def main(tipoSolicitud, calculo, parametros,adicional,imagen):
     tarea["calculo"] = calculo
     tarea["parametros"] = parametros
-    tarea["adicional"] = adicional
     tarea["imagen"] = imagen
+    adicionalT = tarea["adicional"]
+    if(tipoSolicitud != "METODOS"):
+        lista = ast.literal_eval(adicional) #convierte el adicional tipo string a una lista para obtener los valores ingresados
+        
+        if(len(lista) > 1):
+            adicionalT["redondeo"] = lista[0]
+            adicionalT["absoluto"] = lista[1]
+    logging.info("Nueva peticion de cliente")
     if(tipoSolicitud == "GET"):
-        peticion = requests.get("http://127.0.0.1:7685/getRemoteTask",params= {
+        peticion = requests.get("http://localhost:7685/getRemoteTask",params= {
             "calculo":calculo,
             "parametros": parametros,
             "adicional": adicional,
             "imagen": imagen
         }, stream = True)
     if(tipoSolicitud == "POST"):
-        peticion = requests.post("http://127.0.0.1:7685/getRemoteTask",json=tarea, stream = True)
+        peticion = requests.post("http://localhost:7685/getRemoteTask",json=tarea, stream = True)
     if(tipoSolicitud == "METODOS"):
-        peticion = requests.get("http://127.0.0.1:7685/getMetodos",params= {"imagen":imagen}, stream = True)
+        peticion = requests.get("http://localhost:7685/getMetodos",params= {"imagen":imagen}, stream = True)
     try:
         resultado = peticion.json()
     except:
@@ -59,7 +71,7 @@ def main(tipoSolicitud, calculo, parametros,adicional,imagen):
     logging.info(resultado)
 
 if __name__ == "__main__":
-    if(len(sys.argv) == 5):
+    if(len(sys.argv) == 6):
         tipoSolicitud = sys.argv[1]
         calculo = sys.argv[2]
         parametros = sys.argv[3]
