@@ -86,7 +86,7 @@ pytest tests/test_integracion.py -v
 ---
 
 ## Estructura del proyecto
-
+```
 hit3/
 ├── Dockerfile
 ├── requirements.txt
@@ -97,14 +97,16 @@ hit3/
 ├── nginx/
 │   └── nginx.conf     # configuración del load balancer
 └── logs/
-├── nodo1/
-├── nodo2/
-└── nodo3/
+    ├── nodo1/
+    ├── nodo2/
+    └── nodo3/
+```
 
 ---
 
 ## Diagrama de arquitectura
-┌─────────────┐
+```
+                ┌─────────────┐
                 │   Cliente   │
                 └──────┬──────┘
                        │ HTTP
@@ -125,37 +127,41 @@ hit3/
           └───────────┴────────────┘
                 comunicación directa
                 (Bully / heartbeat)
+```
 
 ---
 
 ## Diagrama de secuencia — Elección de líder
 
 ### Estado normal
+```
 nodo1          nodo2          nodo3 (líder)
-│               │                │
-│──heartbeat───►│                │
-│               │──heartbeat────►│
-│──heartbeat────────────────────►│
-│               │                │
+  │               │                │
+  │──heartbeat───►│                │
+  │               │──heartbeat────►│
+  │──heartbeat────────────────────►│
+  │               │                │
+```
 
 ### Caída del líder y nueva elección
+```
 nodo1          nodo2          nodo3 (caído)
-│               │                x
-│──heartbeat────────────────────►x  (timeout)
-│               │──heartbeat────►x  (timeout)
-│               │
-│──ELECTION────►│
-│               │──OK───────────►│  (nodo2 > nodo1)
-│◄──OK──────────│
-│               │
-│               │── ELECTION ───►x  (no responde)
-│               │
-│               │ (nadie con ID mayor responde)
-│               │
-│◄──COORDINATOR─│  (nodo2 se proclama líder)
-│               │
-│  reconoce     │ ★ NUEVO LÍDER
-
+  │               │                x
+  │──heartbeat────────────────────►x  (timeout)
+  │               │──heartbeat────►x  (timeout)
+  │               │
+  │──ELECTION────►│
+  │               │──OK───────────►│  (nodo2 > nodo1)
+  │◄──OK──────────│
+  │               │
+  │               │── ELECTION ───►x  (no responde)
+  │               │
+  │               │ (nadie con ID mayor responde)
+  │               │
+  │◄──COORDINATOR─│  (nodo2 se proclama líder)
+  │               │
+  │  reconoce     │ ★ NUEVO LÍDER
+```
 
 ---
 
