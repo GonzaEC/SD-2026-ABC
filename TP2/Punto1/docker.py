@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 import ast
 import logging
 import os
-import json
+import time
 
 # -------------------
 # Carpeta de logs relativa al script
@@ -22,7 +22,13 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+estado_servicio = {
+    "Servidor": "Iniciado",
+}
 app = FastAPI()
+tiempoInicio = time.time()
+logging.info(f"Se inicio correctamente docker")
+estado_servicio["Servidor"] = "OK"
 metodos = ["suma","resta","multiplicacion","division"]
 @app.post("/ejecutarTarea")
 async def ejecutarTarea(peticion: Request):
@@ -89,3 +95,12 @@ async def ejecutarTarea(peticion: Request):
 def mostrarMetodos():
     logging.info({"metodos": metodos})
     return {"metodos": metodos}
+
+@app.get("/health")
+def estado_Actual():
+    tiempoActual = time.time() - tiempoInicio
+    estado = {
+        "uptime": tiempoActual,
+        "Estado": estado_servicio["Servidor"]
+    }
+    return estado
