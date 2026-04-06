@@ -1,0 +1,37 @@
+2026-04-03 21:38:01,653 - INFO - Servidor iniciado — Nodo 2
+2026-04-03 21:38:01,706 - INFO - [Nodo 2] Bully iniciado.
+2026-04-03 21:38:01,707 - INFO - [HIT3] BullyNode iniciado para nodo 2 con peers: [{'id': 1, 'url': 'http://nodo1:8000'}, {'id': 3, 'url': 'http://nodo3:8000'}]
+2026-04-03 21:38:03,666 - INFO - [HIT3] ELECTION recibido de nodo 1
+2026-04-03 21:38:03,668 - INFO - [Nodo 2] Iniciando elección...
+2026-04-03 21:38:03,700 - INFO - [Nodo 2] Recibió OK de nodo 3
+2026-04-03 21:38:03,702 - INFO - [Nodo 2] Esperando anuncio de coordinador...
+2026-04-03 21:38:03,706 - INFO - [Nodo 2] Iniciando elección...
+2026-04-03 21:38:03,726 - INFO - [Nodo 2] Nuevo coordinador reconocido: nodo 3
+2026-04-03 21:38:03,727 - INFO - [Nodo 2] Recibió OK de nodo 3
+2026-04-03 21:38:03,728 - INFO - [HIT3] COORDINATOR recibido: nodo 3 es el líder
+2026-04-03 21:38:03,729 - INFO - [Nodo 2] Esperando anuncio de coordinador...
+2026-04-03 21:38:03,734 - INFO - [Nodo 2] Nuevo coordinador reconocido: nodo 3
+2026-04-03 21:38:03,735 - INFO - [HIT3] COORDINATOR recibido: nodo 3 es el líder
+2026-04-03 21:38:03,745 - INFO - [Nodo 2] Nuevo coordinador reconocido: nodo 3
+2026-04-03 21:38:03,746 - INFO - [HIT3] COORDINATOR recibido: nodo 3 es el líder
+2026-04-03 21:40:22,911 - INFO - [HIT3] ELECTION recibido de nodo 1
+2026-04-03 21:40:22,916 - INFO - [Nodo 2] Iniciando elección...
+2026-04-03 21:40:22,942 - WARNING - [Nodo 2] Coordinador 3 no responde. Iniciando elección.
+2026-04-03 21:40:26,898 - INFO - [Nodo 2] *** SOY EL NUEVO COORDINADOR ***
+2026-04-06 19:21:24,398 - INFO - Servidor iniciado — Nodo 2
+2026-04-06 19:21:24,498 - INFO - [Nodo 2] Bully iniciado.
+2026-04-06 19:21:24,499 - INFO - [HIT3] BullyNode iniciado para nodo 2 con peers: [{'id': 1, 'url': 'http://nodo1:8000'}, {'id': 3, 'url': 'http://nodo3:8000'}]
+2026-04-06 19:21:26,498 - INFO - [Nodo 2] Iniciando elección...
+2026-04-06 19:21:26,543 - INFO - [HIT3] ELECTION recibido de nodo 1
+2026-04-06 19:21:26,562 - INFO - [Nodo 2] Recibió OK de nodo 3
+2026-04-06 19:21:26,564 - INFO - [Nodo 2] Esperando anuncio de coordinador...
+2026-04-06 19:21:26,581 - INFO - [Nodo 2] Nuevo coordinador reconocido: nodo 3
+2026-04-06 19:21:26,584 - INFO - [HIT3] COORDINATOR recibido: nodo 3 es el líder
+2026-04-06 19:21:26,624 - INFO - [Nodo 2] Nuevo coordinador reconocido: nodo 3
+2026-04-06 19:21:26,627 - INFO - [HIT3] COORDINATOR recibido: nodo 3 es el líder
+2026-04-06 19:21:26,634 - INFO - [Nodo 2] Nuevo coordinador reconocido: nodo 3
+2026-04-06 19:21:26,636 - INFO - [HIT3] COORDINATOR recibido: nodo 3 es el líder
+2026-04-06 19:23:15,820 - WARNING - [Nodo 2] Coordinador 3 no responde. Iniciando elección.
+2026-04-06 19:23:15,829 - INFO - [HIT3] ELECTION recibido de nodo 1
+2026-04-06 19:23:15,830 - INFO - [Nodo 2] Iniciando elección...
+2026-04-06 19:23:19,812 - INFO - [Nodo 2] *** SOY EL NUEVO COORDINADOR ***

@@ -1,0 +1,23 @@
+2026-04-03 21:38:01,748 - INFO - Servidor iniciado — Nodo 3
+2026-04-03 21:38:01,786 - INFO - [Nodo 3] Bully iniciado.
+2026-04-03 21:38:01,787 - INFO - [HIT3] BullyNode iniciado para nodo 3 con peers: [{'id': 1, 'url': 'http://nodo1:8000'}, {'id': 2, 'url': 'http://nodo2:8000'}]
+2026-04-03 21:38:03,665 - INFO - [HIT3] ELECTION recibido de nodo 1
+2026-04-03 21:38:03,669 - INFO - [Nodo 3] Iniciando elección...
+2026-04-03 21:38:03,673 - INFO - [Nodo 3] *** SOY EL NUEVO COORDINADOR ***
+2026-04-03 21:38:03,692 - INFO - [HIT3] ELECTION recibido de nodo 2
+2026-04-03 21:38:03,695 - INFO - [Nodo 3] Iniciando elección...
+2026-04-03 21:38:03,710 - INFO - [Nodo 3] *** SOY EL NUEVO COORDINADOR ***
+2026-04-03 21:38:03,716 - INFO - [HIT3] ELECTION recibido de nodo 2
+2026-04-03 21:38:03,720 - INFO - [Nodo 3] Iniciando elección...
+2026-04-03 21:38:03,723 - INFO - [Nodo 3] *** SOY EL NUEVO COORDINADOR ***
+2026-04-06 19:21:24,396 - INFO - Servidor iniciado — Nodo 3
+2026-04-06 19:21:24,498 - INFO - [Nodo 3] Bully iniciado.
+2026-04-06 19:21:24,499 - INFO - [HIT3] BullyNode iniciado para nodo 3 con peers: [{'id': 1, 'url': 'http://nodo1:8000'}, {'id': 2, 'url': 'http://nodo2:8000'}]
+2026-04-06 19:21:26,497 - INFO - [Nodo 3] Iniciando elección...
+2026-04-06 19:21:26,499 - INFO - [Nodo 3] *** SOY EL NUEVO COORDINADOR ***
+2026-04-06 19:21:26,547 - INFO - [HIT3] ELECTION recibido de nodo 2
+2026-04-06 19:21:26,551 - INFO - [Nodo 3] Iniciando elección...
+2026-04-06 19:21:26,557 - INFO - [Nodo 3] *** SOY EL NUEVO COORDINADOR ***
+2026-04-06 19:21:26,562 - INFO - [HIT3] ELECTION recibido de nodo 1
+2026-04-06 19:21:26,572 - INFO - [Nodo 3] Iniciando elección...
+2026-04-06 19:21:26,576 - INFO - [Nodo 3] *** SOY EL NUEVO COORDINADOR ***
