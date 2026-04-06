@@ -96,6 +96,9 @@ hit3/
 ├── cliente.py         # cliente HTTP
 ├── nginx/
 │   └── nginx.conf     # configuración del load balancer
+├── tests/
+│   ├── test_unitario.py      # tests unitarios de bully.py
+│   └── test_integracion.py   # tests de endpoints HTTP
 └── logs/
     ├── nodo1/
     ├── nodo2/
@@ -163,7 +166,7 @@ nodo1          nodo2          nodo3 (caído)
   │  reconoce     │ ★ NUEVO LÍDER
 ```
 
----
+-----
 
 ## Decisiones de diseño
 
