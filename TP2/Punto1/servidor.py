@@ -77,7 +77,7 @@ async def ejecutarTareaRemota(calculo,parametros,redondeo,absoluto,imagen):
         if procesoActual.returncode != 0:
             return {"estado": "error", "detalle": procesoActual.stderr}
     
-    time.sleep(2)
+    time.sleep(10)
     peticion = requests.post("http://servicio-tarea:8132/ejecutarTarea",json=payload, stream = True)
     procesoActual = subprocess.run(
         ["docker","stop","servicio-tarea"],
@@ -111,7 +111,7 @@ async def ejecutarTareaRemota(peticion: Request):
         )
         if procesoActual.returncode != 0:
             return {"estado": "error", "detalle": procesoActual.stderr}
-    time.sleep(2)
+    time.sleep(10)
     peticion = requests.post("http://servicio-tarea:8132/ejecutarTarea",json=payload, stream = True)
     procesoActual = subprocess.run(
         ["docker","stop","servicio-tarea"],

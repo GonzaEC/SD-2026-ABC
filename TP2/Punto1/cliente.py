@@ -45,16 +45,13 @@ def main(tipoSolicitud, calculo, parametros,adicional,imagen):
     adicionalT = tarea["adicional"]
     if(tipoSolicitud != "METODOS"):
         lista = ast.literal_eval(adicional) #convierte el adicional tipo string a una lista para obtener los valores ingresados
-        print("Lista:")
-        print(lista)
         if(len(lista) > 1):
             adicionalT["redondeo"] = lista[0]
             adicionalT["absoluto"] = lista[1]
         else:
             adicionalT["redondeo"] = -1
             adicionalT["absoluto"] = False
-        print("Adicional")
-        print(adicionalT)
+
     logging.info("Nueva peticion de cliente")
     if(tipoSolicitud == "GET"):
         peticion = requests.get("http://localhost:7685/getRemoteTask",params= {
