@@ -112,4 +112,56 @@ docker stop servidor
 Y luego eliminelo:
 docker rm servidor
 
+### Instrucciones para ejecutar el test
+## 1. Requisitos
+
+Tener instalado **Pytest**.
+
+Verificar instalación:
+
+```bash
+python -m pytest --version
+```
+
+Tener instalado **Docker**.
+
+Verificar instalación:
+
+```bash
+docker --version
+```
+Instalar dependencias:
+
+```bash
+cd ./TP2
+```
+
+```
+pip install -r requirements.txt
+```
+---
+# 2. Seleccionar ubicacion del Punto 1
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP2/Punto1
+```
+---
+# 3. Ingresar con usuario docker solo lectura
+```bash
+docker login -u ianott
+```
+---
+Luego ingresar el token:
+```bash
+(solicitar token no pudo ser subido)
+```
+---
+# 3. Ejecutar el test
+Luego utilizar el siguiente comando:
+
+```bash
+python -m pytest .\tests\test_hit1.py
+```
+---
+
 

@@ -40,17 +40,27 @@ payload = {
     },
     "imagen": "imagen docker"
 }
-
+adicional = {
+    "redondeo": -1,
+    "absoluto": False
+}
 app = FastAPI()
 tiempoInicio = time.time()
 logging.info(f"Se inicio correctamente el servidor")
 estado_servicio["Servidor"] = "OK"
     
 @app.get("/getRemoteTask")
-async def ejecutarTareaRemota(calculo,parametros,adicional,imagen):
+async def ejecutarTareaRemota(calculo,parametros,redondeo,absoluto,imagen):
     payload["calculo"] = calculo
     payload["parametros"] = parametros
-    payload[imagen] = imagen
+    payload["imagen"] = imagen
+    adicional["redondeo"] = int(redondeo)
+    if(absoluto == "True"):
+        adicional["absoluto"] = True 
+    else:
+        adicional["absoluto"] = False
+    
+    payload["adicional"] = adicional
     logging.info(f"Se esta procesando una nueva tarea mediante GET: %s",payload)
     procesoActual = subprocess.run(
         ["docker","run","-d","--network","red_docker","-i","--name","servicio-tarea" ,"-p","8132:8132",imagen],

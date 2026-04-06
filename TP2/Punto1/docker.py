@@ -27,16 +27,16 @@ metodos = ["suma","resta","multiplicacion","division"]
 @app.post("/ejecutarTarea")
 async def ejecutarTarea(peticion: Request):
     payload = await peticion.json()
+    adicional = payload.get("adicional",{})
+    redondeo = adicional.get("redondeo",-1)
+    absoluto = adicional.get("absoluto",False)
     if payload["calculo"] == metodos[0]:
         p = payload["parametros"]
-        resultado = 0
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
-        for valor in lista:
+        resultado = lista[0]
+        for valor in lista[1:]:
             resultado += valor
         
-        adicional = payload.get("adicional",{})
-        redondeo = adicional.get("redondeo",-1)
-        absoluto = adicional.get("absoluto",False)
         if(redondeo >= 0):
             resultado = round(resultado, redondeo)
         if(absoluto):
@@ -45,14 +45,11 @@ async def ejecutarTarea(peticion: Request):
         return {"resultado": resultado}
     if payload["calculo"] == metodos[1]:
         p = payload["parametros"]
-        resultado = 0
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
-        for valor in lista:
+        resultado = lista[0]
+        for valor in lista[1:]:
             resultado -= valor
         
-        adicional = payload.get("adicional",{})
-        redondeo = adicional.get("redondeo",-1)
-        absoluto = adicional.get("absoluto",False)
         if(redondeo >= 0):
             resultado = round(resultado, redondeo)
         if(absoluto):
@@ -61,14 +58,11 @@ async def ejecutarTarea(peticion: Request):
         return {"resultado": resultado}
     if payload["calculo"] == metodos[2]:
         p = payload["parametros"]
-        resultado = 0
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
-        for valor in lista:
+        resultado = lista[0]
+        for valor in lista[1:]:
             resultado *= valor
         
-        adicional = payload.get("adicional",{})
-        redondeo = adicional.get("redondeo",-1)
-        absoluto = adicional.get("absoluto",False)
         if(redondeo >= 0):
             resultado = round(resultado, redondeo)
         if(absoluto):
@@ -77,14 +71,11 @@ async def ejecutarTarea(peticion: Request):
         return {"resultado": resultado}
     if payload["calculo"] == metodos[3]:
         p = payload["parametros"]
-        resultado = 0
         lista = ast.literal_eval(p) #convierte el payload tipo string a una lista para obtener los valores ingresados
-        for valor in lista:
+        resultado = lista[0]
+        for valor in lista[1:]:
             resultado /= valor
         
-        adicional = payload.get("adicional",{})
-        redondeo = adicional.get("redondeo",-1)
-        absoluto = adicional.get("absoluto",False)
         if(redondeo >= 0):
             resultado = round(resultado, redondeo)
         if(absoluto):
