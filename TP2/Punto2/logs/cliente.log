@@ -1,0 +1,4 @@
+2026-04-06 12:56:51,796 - INFO - Respuesta servidor: {'estado': 'encolado', 'timestamp': 1, 'cola': 1}
+2026-04-06 12:58:58,373 - INFO - Respuesta servidor: {'estado': 'encolado', 'timestamp': 1, 'cola': 1}
+2026-04-06 13:34:47,367 - INFO - Respuesta servidor: {'estado': 'encolado', 'timestamp': 1, 'cola': 0}
+2026-04-06 15:16:59,829 - INFO - Respuesta servidor: {'estado': 'encolado', 'timestamp': 1, 'cola': 0}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cliente Distribuido</title>
+</head>
+<body>
+
+<h2>Ejecutar tarea</h2>
+
+<!-- Selección de operación -->
+<select id="calculo">
+    <option value="suma">Suma</option>
+    <option value="resta">Resta</option>
+    <option value="multiplicacion">Multiplicacion</option>
+    <option value="division">Division</option>
+</select>
+
+<br><br>
+
+<!-- Parámetros -->
+<input id="parametros" placeholder="[2,3]" />
+
+<br><br>
+
+<!-- Botón normal -->
+<button onclick="enviar()">Enviar</button>
+
+<!-- Botón de prueba de concurrencia -->
+<button onclick="testConcurrencia()">Test concurrencia (3 tareas)</button>
+
+<br><br>
+
+<!-- Resultado -->
+<pre id="resultado"></pre>
+
+<script>
+
+// =========================
+// ENVIAR UNA SOLA TAREA
+// =========================
+function enviar() {
+
+    let parametros;
+
+    // Validación
+    try {
+        parametros = JSON.parse(document.getElementById("parametros").value);
+    } catch {
+        alert("Parametros inválidos. Usar formato: [1,2,3]");
+        return;
+    }
+
+    fetch("http://127.0.0.1:7685/getRemoteTask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            calculo: document.getElementById("calculo").value,
+            parametros: parametros,
+            adicional: [],
+            imagen: "servicio-tarea:1.0"
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("resultado").innerText =
+            JSON.stringify(data, null, 2);
+    })
+    .catch(err => {
+        document.getElementById("resultado").innerText = err;
+    });
+}
+
+
+// =========================
+// TEST DE CONCURRENCIA
+// =========================
+async function testConcurrencia() {
+
+    const requests = [];
+
+    for (let i = 0; i < 3; i++) {
+        requests.push(
+            fetch("http://127.0.0.1:7685/getRemoteTask", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    calculo: "suma",
+                    parametros: [1, 2],
+                    adicional: [],
+                    imagen: "servicio-tarea:1.0"
+                })
+            }).then(res => res.json())
+        );
+    }
+
+    // Espera todas las respuestas
+    const resultados = await Promise.all(requests);
+
+    document.getElementById("resultado").innerText =
+        JSON.stringify(resultados, null, 2);
+}
+
+</script>
+
+</body>
+</html>
