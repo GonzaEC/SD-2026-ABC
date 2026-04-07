@@ -1,70 +1,28 @@
-2026-04-06 19:08:48,698 - INFO - [ENVIO] Nueva tarea | TS=16 | Lamport=16
-2026-04-06 19:08:48,699 - INFO - [RECIBIDO] Worker 0 | TS recibido=16 | Lamport=17
-2026-04-06 19:08:48,702 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 1], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 16}
-2026-04-06 19:08:48,702 - INFO - [DEBUG] Levantando contenedor servicio-1775502528702 en puerto 8399
-2026-04-06 19:08:53,284 - INFO - [DEBUG] Contenedor listo en intento 3
-2026-04-06 19:08:53,285 - INFO - [DEBUG] Ejecutando request al contenedor servicio-1775502528702
-2026-04-06 19:08:53,313 - INFO - [DEBUG] Deteniendo contenedor servicio-1775502528702
-2026-04-06 19:08:53,970 - INFO - [Worker 0] Resultado: {'resultado': 2}
-2026-04-06 19:08:53,971 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=18
-2026-04-06 19:18:46,134 - INFO - [ENVIO] Nueva tarea | TS=1 | Lamport=1
-2026-04-06 19:18:46,136 - INFO - [RECIBIDO] Worker 0 | TS recibido=1 | Lamport=2
-2026-04-06 19:18:46,136 - INFO - Nuevo worker creado: 0
-2026-04-06 19:18:46,137 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [100, 56], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 1}
-2026-04-06 19:18:51,986 - INFO - [DEBUG] Ejecutando request al contenedor servicio-1775503126139
-2026-04-06 19:18:52,001 - INFO - [DEBUG] Deteniendo contenedor servicio-1775503126139
-2026-04-06 19:18:53,012 - INFO - [Worker 0] Resultado: {'resultado': 156}
-2026-04-06 19:18:53,012 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=3
-2026-04-06 19:19:20,133 - INFO - [ENVIO] Nueva tarea | TS=4 | Lamport=4
-2026-04-06 19:19:20,141 - INFO - [ENVIO] Nueva tarea | TS=5 | Lamport=5
-2026-04-06 19:19:20,141 - INFO - [RECIBIDO] Worker 0 | TS recibido=4 | Lamport=6
-2026-04-06 19:19:20,143 - INFO - [RECIBIDO] Worker 1 | TS recibido=5 | Lamport=7
-2026-04-06 19:19:20,143 - INFO - Nuevo worker creado: 1
-2026-04-06 19:19:20,143 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 4}
-2026-04-06 19:19:20,146 - INFO - [Worker 1] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 5}
-2026-04-06 19:19:20,150 - INFO - [ENVIO] Nueva tarea | TS=8 | Lamport=8
-2026-04-06 19:19:20,156 - INFO - [RECIBIDO] Worker 2 | TS recibido=8 | Lamport=9
-2026-04-06 19:19:20,156 - INFO - Nuevo worker creado: 2
-2026-04-06 19:19:20,157 - INFO - [Worker 2] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 8}
-2026-04-06 19:19:25,951 - INFO - [DEBUG] Ejecutando request al contenedor servicio-1775503160148
-2026-04-06 19:19:25,988 - INFO - [DEBUG] Ejecutando request al contenedor servicio-1775503160152
-2026-04-06 19:19:26,012 - INFO - [DEBUG] Deteniendo contenedor servicio-1775503160148
-2026-04-06 19:19:26,026 - INFO - [DEBUG] Ejecutando request al contenedor servicio-1775503160160
-2026-04-06 19:19:26,046 - INFO - [DEBUG] Deteniendo contenedor servicio-1775503160152
-2026-04-06 19:19:26,122 - INFO - [DEBUG] Deteniendo contenedor servicio-1775503160160
-2026-04-06 19:19:27,532 - INFO - [Worker 1] Resultado: {'resultado': 3}
-2026-04-06 19:19:27,535 - INFO - [FIN] Worker 1 | Tarea completada | Lamport=10
-2026-04-06 19:19:27,738 - INFO - [Worker 0] Resultado: {'resultado': 3}
-2026-04-06 19:19:27,747 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=11
-2026-04-06 19:19:28,118 - INFO - [Worker 2] Resultado: {'resultado': 3}
-2026-04-06 19:19:28,121 - INFO - [FIN] Worker 2 | Tarea completada | Lamport=12
-2026-04-06 19:29:46,813 - INFO - [ENVIO] Nueva tarea | TS=1 | Lamport=1
-2026-04-06 19:29:46,818 - INFO - [RECIBIDO] Worker 0 | TS recibido=1 | Lamport=2
-2026-04-06 19:29:46,819 - INFO - Nuevo worker creado: 0
-2026-04-06 19:29:46,819 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [2, 3], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 1}
-2026-04-06 19:29:46,837 - INFO - [ENVIO] Nueva tarea | TS=3 | Lamport=3
-2026-04-06 19:29:46,838 - INFO - [RECIBIDO] Worker 1 | TS recibido=3 | Lamport=4
-2026-04-06 19:29:46,839 - INFO - Nuevo worker creado: 1
-2026-04-06 19:29:46,839 - INFO - [Worker 1] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 3}
-2026-04-06 19:29:46,857 - INFO - [ENVIO] Nueva tarea | TS=5 | Lamport=5
-2026-04-06 19:29:46,861 - INFO - [RECIBIDO] Worker 2 | TS recibido=5 | Lamport=6
-2026-04-06 19:29:46,862 - INFO - [Worker 2] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 5}
-2026-04-06 19:29:46,862 - INFO - Nuevo worker creado: 2
-2026-04-06 19:29:46,881 - INFO - [ENVIO] Nueva tarea | TS=7 | Lamport=7
-2026-04-06 19:29:46,888 - INFO - [RECIBIDO] Worker 3 | TS recibido=7 | Lamport=8
-2026-04-06 19:29:46,888 - INFO - Nuevo worker creado: 3
-2026-04-06 19:29:46,892 - INFO - [Worker 3] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 7}
-2026-04-06 19:29:46,920 - INFO - [ENVIO] Nueva tarea | TS=9 | Lamport=9
-2026-04-06 19:29:46,952 - INFO - [ENVIO] Nueva tarea | TS=10 | Lamport=10
-2026-04-06 19:30:02,024 - INFO - [Worker 0] Resultado: {'resultado': 5}
-2026-04-06 19:30:02,025 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=11
-2026-04-06 19:30:02,035 - INFO - [RECIBIDO] Worker 0 | TS recibido=9 | Lamport=12
-2026-04-06 19:30:02,037 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 9}
-2026-04-06 19:30:02,551 - INFO - [Worker 2] Resultado: {'resultado': 3}
-2026-04-06 19:30:02,567 - INFO - [FIN] Worker 2 | Tarea completada | Lamport=13
-2026-04-06 19:30:02,581 - INFO - [RECIBIDO] Worker 2 | TS recibido=10 | Lamport=14
-2026-04-06 19:30:02,596 - INFO - [Worker 2] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 10}
-2026-04-06 19:30:03,106 - INFO - [Worker 3] Resultado: {'resultado': 3}
-2026-04-06 19:30:03,110 - INFO - [FIN] Worker 3 | Tarea completada | Lamport=15
-2026-04-06 19:30:03,141 - INFO - [Worker 1] Resultado: {'resultado': 3}
-2026-04-06 19:30:03,147 - INFO - [FIN] Worker 1 | Tarea completada | Lamport=16
+2026-04-07 14:09:28,528 - INFO - [ENVIO] Nueva tarea | TS=1 | Lamport=1
+2026-04-07 14:09:28,532 - INFO - [RECIBIDO] Worker 0 | TS recibido=1 | Lamport=2
+2026-04-07 14:09:28,532 - INFO - Nuevo worker creado: 0
+2026-04-07 14:09:28,534 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [2, 5], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 1}
+2026-04-07 14:09:33,115 - INFO - [Worker 0] Resultado: {'resultado': 7}
+2026-04-07 14:09:33,132 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=3
+2026-04-07 14:11:09,074 - INFO - [ENVIO] Nueva tarea | TS=4 | Lamport=4
+2026-04-07 14:11:09,076 - INFO - [RECIBIDO] Worker 0 | TS recibido=4 | Lamport=5
+2026-04-07 14:11:09,077 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [5, 5], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 4}
+2026-04-07 14:11:13,519 - INFO - [Worker 0] Resultado: {'resultado': 10}
+2026-04-07 14:11:13,533 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=6
+2026-04-07 14:12:29,940 - INFO - [ENVIO] Nueva tarea | TS=7 | Lamport=7
+2026-04-07 14:12:29,942 - INFO - [RECIBIDO] Worker 0 | TS recibido=7 | Lamport=8
+2026-04-07 14:12:29,954 - INFO - [ENVIO] Nueva tarea | TS=9 | Lamport=9
+2026-04-07 14:12:29,954 - INFO - [Worker 0] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 7}
+2026-04-07 14:12:29,956 - INFO - [RECIBIDO] Worker 1 | TS recibido=9 | Lamport=10
+2026-04-07 14:12:29,958 - INFO - Nuevo worker creado: 1
+2026-04-07 14:12:29,961 - INFO - [Worker 1] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 9}
+2026-04-07 14:12:29,966 - INFO - [ENVIO] Nueva tarea | TS=11 | Lamport=11
+2026-04-07 14:12:29,968 - INFO - [RECIBIDO] Worker 2 | TS recibido=11 | Lamport=12
+2026-04-07 14:12:29,968 - INFO - Nuevo worker creado: 2
+2026-04-07 14:12:29,969 - INFO - [Worker 2] Ejecutando tarea {'calculo': 'suma', 'parametros': [1, 2], 'adicional': [], 'imagen': 'servicio-tarea:1.0', 'timestamp': 11}
+2026-04-07 14:12:38,995 - INFO - [Worker 2] Resultado: {'resultado': 3}
+2026-04-07 14:12:39,009 - INFO - [FIN] Worker 2 | Tarea completada | Lamport=13
+2026-04-07 14:12:39,211 - INFO - [Worker 1] Resultado: {'resultado': 3}
+2026-04-07 14:12:39,243 - INFO - [FIN] Worker 1 | Tarea completada | Lamport=14
+2026-04-07 14:12:39,644 - INFO - [Worker 0] Resultado: {'resultado': 3}
+2026-04-07 14:12:39,710 - INFO - [FIN] Worker 0 | Tarea completada | Lamport=15

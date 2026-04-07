@@ -1,0 +1,182 @@
+INFORME TP 2
+
+Este trabajo práctico tiene como objetivo la implementación de un sistema distribuido orientado a la ejecución de tareas remotas
+mediante contenedores Docker, incorporando conceptos de concurrencia, sincronización, coordinación y tolerancia a fallos.
+A lo largo de los distintos hits se construyó un sistema escalable basado en arquitectura cliente-servidor, 
+con ejecución dinámica de servicios, administración de workers, medición de rendimiento y mecanismos de coordinación entre nodos.
+
+Uso de IA
+Utilizamos ChatGPT como apoyo para la comprensión de consignas, diseño de arquitectura distribuida y resolución de dudas conceptuales
+relacionadas con concurrencia, Docker y algoritmos distribuidos como Lamport y Bully.
+El uso de IA permitió acelerar el desarrollo, mejorar la comprensión de los conceptos teóricos y optimizar la implementación
+de las distintas partes del sistema.
+
+Arquitectura del sistema
+- Componentes principales
+    - Cliente: envía solicitudes HTTP con tareas a ejecutar.
+    - Servidor central: recibe tareas, gestiona workers y coordina la ejecución.
+    - Pool de workers: procesa tareas en paralelo utilizando contenedores Docker.
+    - Servicio-tarea: contenedor Docker que ejecuta la lógica de negocio (operaciones).
+    - Módulo de coordinación: maneja sincronización, relojes de Lamport y métricas.
+
+TP2/
+│
+├── Punto1/
+│   ├── cliente.py
+│   ├── servidor.py
+│   ├── docker.py
+│   ├── servidor.dockerfile
+│   ├── servicio-tarea.dockerfile
+│   ├── requirements.txt
+│   ├── README.md
+│   ├── Video-TP2-Hit1.mkv
+│   ├── tests/
+│   └── logs/
+│
+├── Punto2/
+│   ├── cliente.py
+│   ├── servidor.py
+│   ├── index.html
+│   ├── servicio.py
+│   ├── servidor.dockerfile
+│   ├── servicio-tarea.dockerfile
+│   ├── README.md   
+│   ├── requirements.txt
+│   ├── logs/
+│   ├── videos/
+│   └── tests/
+│
+├── Punto3/
+    ├── bully.py
+    ├── cliente.py
+    ├── docker-compose.yml
+    ├── dockerfile
+    ├── README.md
+    ├── requirements.txt
+    ├── servidor.py
+    ├── video-hi3.mp4
+    ├── logs/
+    ├── tests/
+    └── nginx/
+
+Hit #1, Cliente/Servidor con tareas Docker
+Se implementó un sistema cliente-servidor utilizando HTTP, donde el servidor es capaz de recibir tareas genéricas en formato JSON
+y ejecutarlas mediante contenedores Docker dinámicos.
+
+El servidor levanta un contenedor del servicio-tarea, envía los parámetros de ejecución y espera el resultado,
+el cual luego es devuelto al cliente.
+
+Características principales:
+- Comunicación HTTP (GET/POST)
+- Uso de contenedores Docker por tarea
+- Servicio-tarea publicado en Docker Hub
+- Ejecución dinámica de contenedores
+- Autenticación segura mediante login previo en el host (sin exponer credenciales en JSON)
+
+Hit #2, Concurrencia y Exclusión Mutua
+Se incorporó un sistema concurrente basado en un pool de workers que permite la ejecución paralela de tareas.
+
+Características implementadas:
+- Pool de workers 
+- Cola de tareas protegida con exclusión mutua
+- Sincronización mediante locks
+- Implementación de relojes lógicos de Lamport
+- Ejecución concurrente de contenedores Docker
+- Métricas de rendimiento (throughput)
+
+. Se implementó un pool de workers utilizando threads en Python, definido por una cantidad mínima (MIN_WORKERS) y máxima (MAX_WORKERS)
+configurable. Inicialmente se crean los workers mínimos, y se agregan nuevos dinámicamente cuando la carga aumenta,
+hasta alcanzar el máximo permitido. Cada worker toma tareas desde una cola compartida y ejecuta cada tarea levantando un contenedor
+Docker independiente mediante docker run, logrando concurrencia y aislamiento.
+
+. Se implementó una cola de tareas compartida utilizando PriorityQueue de Python, ordenada por timestamp de Lamport.
+Se incorporó exclusión mutua mediante threading.Lock para garantizar que las operaciones sobre la cola no generen condiciones de carrera.
+De esta forma, múltiples solicitudes concurrentes se encolan de forma segura y son procesadas por los workers disponibles
+en orden lógico.
+
+. Se implementó un reloj lógico de Lamport en el servidor mediante una variable global protegida con exclusión mutua.
+Cada vez que se recibe una solicitud, el servidor incrementa el reloj y asigna un timestamp a la tarea.
+Al ser procesada por un worker, se aplica la regla de Lamport: clock = max(clock, timestamp_recibido) + 1.
+Esto garantiza un orden lógico consistente entre los eventos del sistema, incluso en presencia de ejecución concurrente.
+
+Medición de throughput
+Se midió el rendimiento del sistema variando la cantidad de workers:
+Workers	Tiempo (s)	Throughput (tareas/min)
+1	162.89	18.42
+2	101.67	29.51
+4	55.34	54.21
+8	56.09	53.48
+
+Análisis de escalabilidad
+De 1 a 2 workers: mejora significativa del throughput.
+De 2 a 4 workers: mejora fuerte, mejor utilización del paralelismo.
+De 4 a 8 workers: estancamiento del rendimiento.
+
+Conclusión de escalabilidad
+El sistema NO escala linealmente.
+Escala bien hasta 4 workers, pero a partir de ahí aparece un cuello de botella.
+
+Identificación de cuellos de botella
+Dado que todo corre en una sola máquina, los recursos compartidos que limitan la escalabilidad son:
+CPU
+•	Todos los workers compiten por los mismos núcleos 
+•	Al superar la cantidad de cores: saturación
+Memoria RAM
+•	Más workers, más consumo de memoria 
+•	Puede haber swapping 
+I/O de disco
+•	Acceso concurrente a archivos/logs 
+•	Puede generar espera (I/O wait) 
+Daemon de Docker
+•	Maneja todos los contenedores 
+•	Overhead al escalar muchos workers 
+
+Conclusión final 
+El sistema presenta una mejora significativa en el throughput al aumentar la cantidad de workers de 1 a 4,
+lo que evidencia un correcto aprovechamiento del paralelismo.
+Sin embargo, al incrementar la cantidad de workers a 8, el rendimiento deja de mejorar e incluso presenta una leve degradación,
+indicando que la escalabilidad no es lineal.
+Esto sugiere la aparición de cuellos de botella en recursos compartidos.
+Entre los principales factores limitantes se encuentran la CPU, debido a la competencia entre workers por los núcleos disponibles;
+la memoria, por el incremento en el consumo; el I/O de disco; la red de Docker;
+y el propio daemon de Docker, que introduce overhead al gestionar múltiples contenedores.
+Al ejecutarse todo en una única máquina, estos recursos se saturan rápidamente, impidiendo un crecimiento proporcional del rendimiento.
+
+Hit #3, Coordinación y Tolerancia a Fallos
+Se implementó un sistema distribuido con múltiples instancias del servidor y un balanceador de carga nginx,
+incorporando el algoritmo de elección de líder Bully.
+
+Características principales:
+- Múltiples nodos del servidor
+- Balanceo de carga con nginx
+- Algoritmo de elección de líder (Bully)
+- Heartbeats para detección de fallos
+- Re-elección automática de coordinador
+- Redistribución de tareas ante fallos
+
+Tolerancia a fallos
+Cuando el nodo coordinador falla:
+- Se detecta la caída mediante heartbeat
+- Se inicia una elección Bully
+- El nodo con mayor ID activo se convierte en líder
+- Se reanuda la asignación de tareas
+
+Tiempo de recuperación
+El sistema logra recuperarse en aproximadamente:
+- Detección de falla: ~5 segundos
+- Elección de líder: ~1 segundo
+- Recuperación total: ~4–6 segundos
+
+Conclusión general del TP
+El desarrollo del TP2 permitió comprender en profundidad:
+- La ejecución de tareas distribuidas con contenedores Docker
+- La gestión de concurrencia mediante pools de workers
+- La importancia de la sincronización en sistemas paralelos
+- El impacto de los cuellos de botella en la escalabilidad
+- La implementación de algoritmos de coordinación como Bully
+- El diseño de sistemas tolerantes a fallos
+
+El sistema evoluciona desde una arquitectura cliente-servidor simple hacia un sistema distribuido concurrente y coordinado,
+incorporando mecanismos de escalabilidad, resiliencia y observabilidad.
+
+

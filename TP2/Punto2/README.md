@@ -41,12 +41,16 @@ docker --version
 ### 2. Instalar dependencias
 
 ```bash
-pip install fastapi uvicorn requests pytest
+cd ./TP2/Punto2
+```
+
+```
+pip install -r requirements.txt
 ```
 
 ---
 
-### 3. Construir la imagen Docker
+### 3. Construir las imagenes Docker
 
 ```bash
 docker build -t servicio-tarea:1.0 -f servicio-tarea.dockerfile .
@@ -271,11 +275,21 @@ Se implementaron:
 * Verifican el flujo completo:
   Cliente → Servidor → Worker → Contenedor
 
-Ejecutar:
-
+### Instalación de dependencias para testing
 ```bash
-pytest tests/
+pip install pytest httpx fastapi requests
 ```
 
----
+### Correr todos los tests
+```bash
+pytest tests/ -v
+```
 
+### Correr por separado
+```bash
+# Solo unitarios
+pytest tests/testUnitario.py -v
+
+# Solo integración
+pytest tests/testIntegracion.py -v
+```

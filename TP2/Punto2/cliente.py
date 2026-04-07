@@ -20,6 +20,8 @@ logging.basicConfig(
     ]
 )
 
+# Dirección del servidor al que se le van a mandar las tareas
+# 127.0.0.1 = localhost (mi maquina), puerto 7685
 URL_SERVIDOR = "http://127.0.0.1:7685"
 
 # Funcion principal, arma y envia la tarea
@@ -34,7 +36,7 @@ def enviar_tarea(tipo, calculo, parametros, adicional, imagen):
     imagen: nombre de imagen docker
     """
 
-    # Validar parámetros, los transformo en formaton json
+    # Validar parámetros, los transformo en una lista
     try:
         parametros = json.loads(parametros) if parametros else []
     except:
@@ -58,8 +60,8 @@ def enviar_tarea(tipo, calculo, parametros, adicional, imagen):
         # Envio tarea al servidor
         if tipo == "POST":
             response = requests.post(
-                f"{URL_SERVIDOR}/getRemoteTask",
-                json=tarea,
+                f"{URL_SERVIDOR}/getRemoteTask", # URL del endpoint
+                json=tarea, # Manda la tarea en el cuerpo del request como JSON
                 timeout=10
             )
 
@@ -67,14 +69,14 @@ def enviar_tarea(tipo, calculo, parametros, adicional, imagen):
         elif tipo == "GET":
             response = requests.get(
                 f"{URL_SERVIDOR}/getRemoteTask",
-                params=tarea,
+                params=tarea, # Manda la tarea por la URL 
                 timeout=10
             )
         
         #Obtiene los metodos que soporta el servidor
         elif tipo == "METODOS":
             response = requests.get(
-                f"{URL_SERVIDOR}/getMetodos",
+                f"{URL_SERVIDOR}/getMetodos", 
                 params={"imagen": imagen},
                 timeout=10
             )
@@ -102,6 +104,7 @@ if __name__ == "__main__":
     python cliente.py METODOS servicio-tarea:1.0
     """
 
+    # Si no pasaron ningún argumento, avisa y termina el programa
     if len(sys.argv) < 2:
         print("Uso incorrecto")
         sys.exit(1)
@@ -109,6 +112,7 @@ if __name__ == "__main__":
     tipo = sys.argv[1]
 
     if tipo == "METODOS":
+        # Si no son exactamente 3 argumentos en total, error
         if len(sys.argv) != 3:
             print("Uso: python cliente.py METODOS <imagen>")
             sys.exit(1)
@@ -116,6 +120,7 @@ if __name__ == "__main__":
         enviar_tarea(tipo, None, None, None, sys.argv[2])
 
     else:
+         # Para POST/GET se necesitan exactamente 6 argumentos en total
         if len(sys.argv) != 6:
             print("Uso: python cliente.py POST suma \"[2,3]\" \"[]\" servicio-tarea:1.0")
             sys.exit(1)
