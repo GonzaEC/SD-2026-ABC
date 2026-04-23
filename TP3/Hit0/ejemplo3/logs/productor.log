@@ -1,0 +1,10 @@
+2026-04-23 11:59:27,793 - INFO - [Productor ]Enviando mensajes a 'cola_principal'...
+2026-04-23 11:59:27,794 - INFO - [Productor ]Enviado: ID=1, OK
+2026-04-23 11:59:27,795 - INFO - [Productor ]Enviado: ID=2, CON ERROR
+2026-04-23 11:59:27,797 - INFO - [Productor ]Enviado: ID=3, OK
+2026-04-23 11:59:27,797 - INFO - [Productor ]Enviado: ID=4, CON ERROR
+2026-04-23 11:59:27,798 - INFO - [Productor ]Enviado: ID=5, OK
+2026-04-23 11:59:27,799 - INFO - [Productor ]Enviado: ID=6, CON ERROR
+2026-04-23 11:59:27,800 - INFO - [Productor ]Enviado: ID=7, OK
+2026-04-23 11:59:27,801 - INFO - [Productor ]Enviado: ID=8, OK
+2026-04-23 11:59:27,845 - INFO - [Productor ]Todos los mensajes enviados.

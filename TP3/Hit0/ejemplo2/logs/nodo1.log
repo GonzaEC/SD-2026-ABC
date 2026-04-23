@@ -1,0 +1,16 @@
+2026-04-22 21:34:51,418 - INFO - [nodo1] Health: http://localhost:8001/health
+2026-04-22 21:34:51,419 - INFO - [nodo1] Esperando mensajes...
+
+2026-04-22 21:35:39,216 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 1}
+2026-04-22 21:35:40,175 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 2}
+2026-04-22 21:35:41,190 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 3}
+2026-04-22 21:35:42,207 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 4}
+2026-04-22 21:35:43,216 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 5}
+2026-04-22 21:40:02,769 - INFO - [nodo1] Health: http://localhost:8001/health
+2026-04-22 21:40:02,770 - INFO - [nodo1] Esperando mensajes...
+
+2026-04-22 21:40:12,353 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 1}
+2026-04-22 21:40:13,315 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 2}
+2026-04-22 21:40:14,324 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 3}
+2026-04-22 21:40:15,338 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 4}
+2026-04-22 21:40:16,342 - INFO - [nodo1] Recibido: {'evento': 'nuevo_bloque', 'numero': 5}

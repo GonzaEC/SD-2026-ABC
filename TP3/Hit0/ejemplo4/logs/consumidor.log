@@ -1,0 +1,40 @@
+2026-04-23 12:38:41,190 - INFO - Consumidor activo. Escuchando 'cola_trabajo' y 'cola_muertos_retry'.
+2026-04-23 12:38:41,191 - INFO - Delays configurados: 1s - 2s - 4s - 8s - DLQ
+2026-04-23 12:38:41,192 - INFO - Probabilidad de fallo por intento: 50%
+2026-04-23 12:38:41,192 - INFO - Ctrl+C para salir.
+
+2026-04-23 12:38:50,393 - INFO - ========================================
+2026-04-23 12:38:50,397 - INFO - [Task 1], Intento #1 de 4
+2026-04-23 12:38:50,397 - WARNING - [Task 1] FALLO en intento #1
+2026-04-23 12:38:50,398 - INFO - [Retry] Reintento #1: esperando 1s en 'cola_espera_1s'
+2026-04-23 12:38:50,648 - INFO - ========================================
+2026-04-23 12:38:50,648 - INFO - [Task 2], Intento #1 de 4
+2026-04-23 12:38:50,649 - WARNING - [Task 2] FALLO en intento #1
+2026-04-23 12:38:50,649 - INFO - [Retry] Reintento #1: esperando 1s en 'cola_espera_1s'
+2026-04-23 12:38:50,963 - INFO - ========================================
+2026-04-23 12:38:50,964 - INFO - [Task 3], Intento #1 de 4
+2026-04-23 12:38:50,966 - WARNING - [Task 3] FALLO en intento #1
+2026-04-23 12:38:50,967 - INFO - [Retry] Reintento #1: esperando 1s en 'cola_espera_1s'
+2026-04-23 12:38:51,271 - INFO - ========================================
+2026-04-23 12:38:51,272 - INFO - [Task 4], Intento #1 de 4
+2026-04-23 12:38:51,273 - INFO - [Task 4] OK en intento #1
+2026-04-23 12:38:51,443 - INFO - ========================================
+2026-04-23 12:38:51,444 - INFO - [Task 1], Intento #2 de 4
+2026-04-23 12:38:51,444 - WARNING - [Task 1] FALLO en intento #2
+2026-04-23 12:38:51,444 - INFO - [Retry] Reintento #2: esperando 2s en 'cola_espera_2s'
+2026-04-23 12:38:51,582 - INFO - ========================================
+2026-04-23 12:38:51,582 - INFO - [Task 5], Intento #1 de 4
+2026-04-23 12:38:51,583 - INFO - [Task 5] OK en intento #1
+2026-04-23 12:38:51,654 - INFO - ========================================
+2026-04-23 12:38:51,655 - INFO - [Task 2], Intento #2 de 4
+2026-04-23 12:38:51,655 - WARNING - [Task 2] FALLO en intento #2
+2026-04-23 12:38:51,656 - INFO - [Retry] Reintento #2: esperando 2s en 'cola_espera_2s'
+2026-04-23 12:38:51,975 - INFO - ========================================
+2026-04-23 12:38:51,976 - INFO - [Task 3], Intento #2 de 4
+2026-04-23 12:38:51,976 - INFO - [Task 3] OK en intento #2
+2026-04-23 12:38:53,448 - INFO - ========================================
+2026-04-23 12:38:53,448 - INFO - [Task 1], Intento #3 de 4
+2026-04-23 12:38:53,449 - INFO - [Task 1] OK en intento #3
+2026-04-23 12:38:53,665 - INFO - ========================================
+2026-04-23 12:38:53,667 - INFO - [Task 2], Intento #3 de 4
+2026-04-23 12:38:53,668 - INFO - [Task 2] OK en intento #3

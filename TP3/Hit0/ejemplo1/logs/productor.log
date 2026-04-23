@@ -1,0 +1,12 @@
+2026-04-22 21:00:23,671 - INFO - [Productor] Enviando tareas...
+2026-04-22 21:00:23,673 - INFO - [Productor] Enviado: Tarea #1: procesar item 1
+2026-04-22 21:00:23,884 - INFO - [Productor] Enviado: Tarea #2: procesar item 2
+2026-04-22 21:00:24,089 - INFO - [Productor] Enviado: Tarea #3: procesar item 3
+2026-04-22 21:00:24,302 - INFO - [Productor] Enviado: Tarea #4: procesar item 4
+2026-04-22 21:00:24,504 - INFO - [Productor] Enviado: Tarea #5: procesar item 5
+2026-04-22 21:00:24,709 - INFO - [Productor] Enviado: Tarea #6: procesar item 6
+2026-04-22 21:00:24,934 - INFO - [Productor] Enviado: Tarea #7: procesar item 7
+2026-04-22 21:00:25,152 - INFO - [Productor] Enviado: Tarea #8: procesar item 8
+2026-04-22 21:00:25,354 - INFO - [Productor] Enviado: Tarea #9: procesar item 9
+2026-04-22 21:00:25,557 - INFO - [Productor] Enviado: Tarea #10: procesar item 10
+2026-04-22 21:00:25,765 - INFO - [Productor] Todos los mensajes enviados.

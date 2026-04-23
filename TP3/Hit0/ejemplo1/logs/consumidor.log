@@ -1,0 +1,31 @@
+2026-04-22 20:57:59,418 - INFO - Pika version 1.3.2 connecting to ('::1', 5672, 0, 0)
+2026-04-22 20:57:59,420 - INFO - Socket connected: <socket.socket fd=880, family=AddressFamily.AF_INET6, type=SocketKind.SOCK_STREAM, proto=6, laddr=('::1', 53005, 0, 0), raddr=('::1', 5672, 0, 0)>
+2026-04-22 20:57:59,421 - INFO - Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x0000021700F4ABC0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x0000021700F4ABC0> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>).
+2026-04-22 20:57:59,506 - INFO - AMQPConnector - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x0000021700F4ABC0> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>
+2026-04-22 20:57:59,506 - INFO - AMQPConnectionWorkflow - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x0000021700F4ABC0> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>
+2026-04-22 20:57:59,507 - INFO - Connection workflow succeeded: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x0000021700F4ABC0> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>
+2026-04-22 20:57:59,508 - INFO - Created channel=1
+2026-04-22 21:00:01,791 - INFO - [Consumidor 1] Health: http://localhost:8001/health
+2026-04-22 21:00:01,792 - INFO - [Consumidor 1] Esperando mensajes...
+2026-04-22 21:00:13,858 - INFO - [Consumidor 2] Health: http://localhost:8002/health
+2026-04-22 21:00:13,858 - INFO - [Consumidor 2] Esperando mensajes...
+2026-04-22 21:00:23,722 - INFO - [Consumidor 1] Recibido: Tarea #1: procesar item 1
+2026-04-22 21:00:23,887 - INFO - [Consumidor 2] Recibido: Tarea #2: procesar item 2
+2026-04-22 21:00:24,724 - INFO - [Consumidor 1] Procesado: Tarea #1: procesar item 1
+2026-04-22 21:00:24,731 - INFO - [Consumidor 1] Recibido: Tarea #3: procesar item 3
+2026-04-22 21:00:24,896 - INFO - [Consumidor 2] Procesado: Tarea #2: procesar item 2
+2026-04-22 21:00:24,903 - INFO - [Consumidor 2] Recibido: Tarea #4: procesar item 4
+2026-04-22 21:00:25,745 - INFO - [Consumidor 1] Procesado: Tarea #3: procesar item 3
+2026-04-22 21:00:25,747 - INFO - [Consumidor 1] Recibido: Tarea #5: procesar item 5
+2026-04-22 21:00:25,919 - INFO - [Consumidor 2] Procesado: Tarea #4: procesar item 4
+2026-04-22 21:00:25,921 - INFO - [Consumidor 2] Recibido: Tarea #6: procesar item 6
+2026-04-22 21:00:26,753 - INFO - [Consumidor 1] Procesado: Tarea #5: procesar item 5
+2026-04-22 21:00:26,756 - INFO - [Consumidor 1] Recibido: Tarea #7: procesar item 7
+2026-04-22 21:00:26,927 - INFO - [Consumidor 2] Procesado: Tarea #6: procesar item 6
+2026-04-22 21:00:26,929 - INFO - [Consumidor 2] Recibido: Tarea #8: procesar item 8
+2026-04-22 21:00:27,769 - INFO - [Consumidor 1] Procesado: Tarea #7: procesar item 7
+2026-04-22 21:00:27,774 - INFO - [Consumidor 1] Recibido: Tarea #9: procesar item 9
+2026-04-22 21:00:27,939 - INFO - [Consumidor 2] Procesado: Tarea #8: procesar item 8
+2026-04-22 21:00:27,941 - INFO - [Consumidor 2] Recibido: Tarea #10: procesar item 10
+2026-04-22 21:00:28,781 - INFO - [Consumidor 1] Procesado: Tarea #9: procesar item 9
+2026-04-22 21:00:28,954 - INFO - [Consumidor 2] Procesado: Tarea #10: procesar item 10

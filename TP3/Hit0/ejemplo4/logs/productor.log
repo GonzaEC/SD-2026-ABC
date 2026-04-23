@@ -1,0 +1,8 @@
+2026-04-23 12:38:50,332 - INFO - [Productor] Enviando tareas a 'cola_trabajo'...
+
+2026-04-23 12:38:50,334 - INFO - [Productor] Enviada: Tarea #1 - Llamada a API externa
+2026-04-23 12:38:50,645 - INFO - [Productor] Enviada: Tarea #2 - Escritura en base de datos
+2026-04-23 12:38:50,956 - INFO - [Productor] Enviada: Tarea #3 - Procesamiento de imagen
+2026-04-23 12:38:51,267 - INFO - [Productor] Enviada: Tarea #4 - Envío de email
+2026-04-23 12:38:51,579 - INFO - [Productor] Enviada: Tarea #5 - Sincronización con servicio externo
+2026-04-23 12:38:51,892 - INFO - [Productor] Fin envío

@@ -1,0 +1,12 @@
+2026-04-23 11:59:11,674 - INFO - [DLQ Auditor ]Health: http://localhost:8002/health
+2026-04-23 11:59:11,675 - INFO - [DLQ Auditor] Monitoreando 'cola_muertos' (DLQ). Ctrl+C para salir.
+
+2026-04-23 11:59:27,855 - ERROR - [DLQ Auditor] ===============================
+2026-04-23 11:59:27,867 - ERROR - [DLQ Auditor] Mensaje fallido: ID=2, Contenido: Transacción corrupta #2
+2026-04-23 11:59:27,870 - ERROR - [DLQ Auditor] ===============================
+2026-04-23 11:59:27,881 - ERROR - [DLQ Auditor] ===============================
+2026-04-23 11:59:27,881 - ERROR - [DLQ Auditor] Mensaje fallido: ID=4, Contenido: Registro inválido #4
+2026-04-23 11:59:27,883 - ERROR - [DLQ Auditor] ===============================
+2026-04-23 11:59:27,887 - ERROR - [DLQ Auditor] ===============================
+2026-04-23 11:59:27,888 - ERROR - [DLQ Auditor] Mensaje fallido: ID=6, Contenido: Dato malformado #6
+2026-04-23 11:59:27,889 - ERROR - [DLQ Auditor] ===============================

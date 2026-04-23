@@ -1,0 +1,14 @@
+2026-04-22 21:35:39,165 - INFO - [PUBLICADOR] Enviando eventos...
+2026-04-22 21:35:39,167 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 1}
+2026-04-22 21:35:40,172 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 2}
+2026-04-22 21:35:41,186 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 3}
+2026-04-22 21:35:42,204 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 4}
+2026-04-22 21:35:43,213 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 5}
+2026-04-22 21:35:44,240 - INFO - [PUBLICADOR] Finalizado.
+2026-04-22 21:40:12,307 - INFO - [PUBLICADOR] Enviando eventos...
+2026-04-22 21:40:12,308 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 1}
+2026-04-22 21:40:13,312 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 2}
+2026-04-22 21:40:14,321 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 3}
+2026-04-22 21:40:15,336 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 4}
+2026-04-22 21:40:16,339 - INFO - [PUBLICADOR] Enviado: {'evento': 'nuevo_bloque', 'numero': 5}
+2026-04-22 21:40:17,357 - INFO - [PUBLICADOR] Finalizado.

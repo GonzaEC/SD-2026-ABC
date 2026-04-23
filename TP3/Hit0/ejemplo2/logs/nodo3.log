@@ -1,0 +1,8 @@
+2026-04-22 21:35:25,786 - INFO - [nodo3] Health: http://localhost:8003/health
+2026-04-22 21:35:25,786 - INFO - [nodo3] Esperando mensajes...
+
+2026-04-22 21:35:39,216 - INFO - [nodo3] Recibido: {'evento': 'nuevo_bloque', 'numero': 1}
+2026-04-22 21:35:40,175 - INFO - [nodo3] Recibido: {'evento': 'nuevo_bloque', 'numero': 2}
+2026-04-22 21:35:41,190 - INFO - [nodo3] Recibido: {'evento': 'nuevo_bloque', 'numero': 3}
+2026-04-22 21:35:42,207 - INFO - [nodo3] Recibido: {'evento': 'nuevo_bloque', 'numero': 4}
+2026-04-22 21:35:43,216 - INFO - [nodo3] Recibido: {'evento': 'nuevo_bloque', 'numero': 5}

@@ -1,0 +1,26 @@
+2026-04-23 11:59:19,405 - INFO - [Consumidor ]Health: http://localhost:8001/health
+2026-04-23 11:59:19,408 - INFO - [Consumidor] Escuchando 'cola_principal'. Ctrl+C para salir.
+2026-04-23 11:59:27,841 - INFO - 
+[Consumidor] Recibido: {'id': 1, 'contenido': 'Transacción válida #1', 'error': False}
+2026-04-23 11:59:27,843 - INFO - [Consumidor] Mensaje ID=1 procesado correctamente.
+2026-04-23 11:59:27,848 - INFO - 
+[Consumidor] Recibido: {'id': 2, 'contenido': 'Transacción corrupta #2', 'error': True}
+2026-04-23 11:59:27,851 - WARNING - [Consumidor] Mensaje ID=2 tiene error. Rechazando a DLQ
+2026-04-23 11:59:27,855 - INFO - 
+[Consumidor] Recibido: {'id': 3, 'contenido': 'Transacción válida #3', 'error': False}
+2026-04-23 11:59:27,856 - INFO - [Consumidor] Mensaje ID=3 procesado correctamente.
+2026-04-23 11:59:27,859 - INFO - 
+[Consumidor] Recibido: {'id': 4, 'contenido': 'Registro inválido #4', 'error': True}
+2026-04-23 11:59:27,859 - WARNING - [Consumidor] Mensaje ID=4 tiene error. Rechazando a DLQ
+2026-04-23 11:59:27,862 - INFO - 
+[Consumidor] Recibido: {'id': 5, 'contenido': 'Transacción válida #5', 'error': False}
+2026-04-23 11:59:27,863 - INFO - [Consumidor] Mensaje ID=5 procesado correctamente.
+2026-04-23 11:59:27,867 - INFO - 
+[Consumidor] Recibido: {'id': 6, 'contenido': 'Dato malformado #6', 'error': True}
+2026-04-23 11:59:27,867 - WARNING - [Consumidor] Mensaje ID=6 tiene error. Rechazando a DLQ
+2026-04-23 11:59:27,870 - INFO - 
+[Consumidor] Recibido: {'id': 7, 'contenido': 'Transacción válida #7', 'error': False}
+2026-04-23 11:59:27,871 - INFO - [Consumidor] Mensaje ID=7 procesado correctamente.
+2026-04-23 11:59:27,875 - INFO - 
+[Consumidor] Recibido: {'id': 8, 'contenido': 'Transacción válida #8', 'error': False}
+2026-04-23 11:59:27,876 - INFO - [Consumidor] Mensaje ID=8 procesado correctamente.
