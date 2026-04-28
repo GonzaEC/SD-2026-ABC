@@ -13,6 +13,7 @@ Ejemplo:
 import sys
 import os
 import math
+import time
 from PIL import Image
 
 
@@ -31,7 +32,7 @@ KERNEL_GY = [
     [+1, +2, +1],
 ]
 
-
+inicio = time.time()
 def to_grayscale(image: Image.Image) -> list[list[int]]:
     """Convierte una imagen PIL a una matriz 2D de valores de gris (0–255)."""
     gray = image.convert("L")          # PIL convierte a luminancia
@@ -69,6 +70,7 @@ def sobel(image: Image.Image) -> Image.Image:
         Gy  = convolución con kernel vertical
         |G| = sqrt(Gx² + Gy²)    → normalizado a [0, 255]
     """
+    
     grid   = to_grayscale(image)
     height = len(grid)
     width  = len(grid[0])
@@ -123,13 +125,16 @@ def main():
     print(f"Leyendo imagen:  {input_path}")
     image = Image.open(input_path)
     print(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
-
+    
     print("Aplicando operador de Sobel...")
     resultado = sobel(image)
 
     resultado.save(output_path)
     print(f"Imagen guardada: {output_path}")
     print("¡Listo!")
+    fin = time.time()
+    tiempo = fin - inicio
+    print("tiempo ", tiempo )
 
 
 if __name__ == "__main__":

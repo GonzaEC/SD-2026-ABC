@@ -1,0 +1,10 @@
+services:
+  worker1:
+    build: .
+    command: python worker.py 1
+  worker2:
+    build: .
+    command: python worker.py 2
+  worker3:
+    build: .
+    command: python worker.py 3
