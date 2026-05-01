@@ -73,8 +73,7 @@ def joinResultado(ch, method, properties, body):
         result.save(output_path)
         log.info(f"[Joiner] Imagen guardada: {output_path}")
         print("¡Listo!")
-        # Confirmar que el mensaje fue procesado correctamente (ACK manual)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        
     else:
         log.info(f"[Joiner] imagen en proceso")
     

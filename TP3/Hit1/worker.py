@@ -151,7 +151,8 @@ def main():
     channel.basic_consume(
         queue='tareas',
         on_message_callback=procesar_mensaje,
-        auto_ack=False  # ACK manual para mayor control
+        auto_ack=False  # ACK manual para mayor control 
+        #en caso de que este worker caiga el splitter envia a otro worker la t
     )
     
     
