@@ -15,10 +15,24 @@ Verificar instalación:
 ```bash
 docker --version
 ```
+Tener instalado **k3d**.
+
+Verificar instalación:
+
+```bash
+k3d --version
+```
+Tener instalado **kubectl**.
+
+Verificar instalación:
+
+```bash
+kubectl --version
+```
 Instalar dependencias:
 
 ```bash
-cd ./TP2
+cd ./TP3
 ```
 
 ```
@@ -31,25 +45,24 @@ Abrir una terminal y ejecutar:
 cd ./TP3/Hit1
 ```
 ---
-# 3. Iniciar rabbitmq
+# 3. Construir imagen del worker
 ```bash
-docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+docker build -t grupoABC/sobel-worker:latest .
 ```
 ---
-# 4. Configurar contenedor docker de los workers
+# 4. Aplicar archivos de rabbitMQ y de los workers
 
 ```bash
-docker compose build --no-cache 
+kubectl apply -f rabbitmq.yaml -f workers.yaml
 ```
 ---
 
-# 5. Iniciar workers
+# 5. Exponer puerto de rabbitMQ
 
 
 ```bash
-docker compose up
+kubectl port-forward svc/rabbitmq 5672:5672
 ```
-
 # 6. Ejecutar el Proceso Principal
 
 

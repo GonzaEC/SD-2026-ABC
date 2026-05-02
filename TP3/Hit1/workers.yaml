@@ -1,0 +1,19 @@
+# workers.yaml — N réplicas del worker Sobel
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sobel-worker
+spec:
+  replicas: 3                           # ← acá está la magia distribuida
+  selector: { matchLabels: { app: sobel-worker } }
+  template:
+    metadata: { labels: { app: sobel-worker } }
+    spec:
+      containers:
+      - name: worker
+        image: grupoABC/sobel-worker:latest
+        env:
+        - name: RABBIT_HOST
+          value: "rabbitmq"             # ← DNS interno del cluster, apunta al Service
+        - name: QUEUE_NAME
+          value: "image-jobs"

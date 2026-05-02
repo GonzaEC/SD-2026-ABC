@@ -53,7 +53,10 @@ def calcularHeight(lista: list):
      
 def joinResultado(ch, method, properties, body):
     mensaje = json.loads(body)
-    log.info(f"[Joiner] Recibido: {mensaje}")
+    log.info(f"[Joiner] Recibido: indice=%s fragmentos=%s resultado_bytes=%s",
+            mensaje["indice"],
+            mensaje["fragmentos"],
+            len(mensaje["resultado"]))
     
     #procesar fragmento
     listaFragmentos.append(mensaje)
@@ -91,8 +94,11 @@ def main():
     threading.Thread(target=iniciar_api, daemon=True).start()
 
     # Conectar al broker
+    credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost')
+        pika.ConnectionParameters(host='localhost',
+                                  port = 5672,
+                                  credentials=credencial)
     )
     channel = connection.channel()
 

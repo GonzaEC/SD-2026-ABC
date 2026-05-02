@@ -80,9 +80,13 @@ def main():
     height = image.height
     fragmento_height = height // WORKERS
     # Conectar al broker
+    credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost')
+        pika.ConnectionParameters(host='localhost',
+                                  port = 5672,
+                                  credentials=credencial)
     )
+    
     channel = connection.channel()
 
     # Declarar la cola (durable=True para que sobreviva reinicios)

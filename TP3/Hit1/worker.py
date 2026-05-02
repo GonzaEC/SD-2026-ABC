@@ -56,21 +56,19 @@ logging.getLogger("pika").setLevel(logging.WARNING)
 # FASTAPI
 # -------------------------
 app = FastAPI()
-
+WORKER_ID = os.getenv("sobel-worker", "unknown")
 @app.get("/health")
 def health():
     return {
-        "servicio": f"Worker_{WORKER_ID}",
+        "servicio": WORKER_ID,
         "status": "running",
-        "host.docker.internal": "connected"
+        "rabbitmq": "connected"
     }
 
 def iniciar_api():
-    puerto = 8000 + int(WORKER_ID)
+    puerto = 8000
     uvicorn.run(app, host="0.0.0.0", port=puerto)
 
-# Identificador opcional para distinguir instancias
-WORKER_ID = sys.argv[1] if len(sys.argv) > 1 else "?"
 
 
 
@@ -84,7 +82,10 @@ def procesar_mensaje(ch, method, properties, body):
     datos = base64.b64decode(mensaje["imagen"])
     imagen = Image.open(io.BytesIO(datos))
     resultado = sobel(imagen)
-    log.info(f"[Worker {WORKER_ID}] Procesado: {mensaje}")
+    log.info(f"[Worker {WORKER_ID}] Procesado: indice=%s fragmentos=%s imagen_bytes=%s",
+            indice,
+            mensaje["fragmentos"],
+            len(mensaje["imagen"]))
     
     # Confirmar que el mensaje fue procesado correctamente (ACK manual)
     ch.basic_ack(delivery_tag=method.delivery_tag)
@@ -123,16 +124,17 @@ def procesar_mensaje(ch, method, properties, body):
 def conectar_rabbit():
     while True:
         try:
+            credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
             connection = pika.BlockingConnection(
-                pika.ConnectionParameters(
-                    host="host.docker.internal"
-                )
+            pika.ConnectionParameters(host='rabbitmq',
+                                  port = 5672,
+                                  credentials=credencial)
             )
-            print("Conectado a host.docker.internal")
+            print("Conectado a rabbitmq")
             return connection
 
         except pika.exceptions.AMQPConnectionError:
-            print("host.docker.internal no disponible, reintentando...")
+            print("rabbitmq no disponible, reintentando...")
             time.sleep(5)
 
 def main():
@@ -157,7 +159,7 @@ def main():
     
     
     
-    log.info(f"[Worker {WORKER_ID}] Health: http://host.docker.internal:{8000 + int(WORKER_ID)}/health")
+    log.info(f"[Worker {WORKER_ID}] Health: http://sobel-worker:{8000}/health")
     
     log.info(f"[Worker {WORKER_ID}] Esperando mensajes...")
    
