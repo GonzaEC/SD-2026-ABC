@@ -1,8 +1,8 @@
 import sys
 import os
 import subprocess
-from joiner import main
-from splitter import main
+from TP3.Hit1.etapa2.joiner import main
+from TP3.Hit1.etapa2.splitter import main
 
 def build_output_path(input_path: str) -> str:
     """Genera el nombre de salida agregando '_sobel' antes de la extensión."""

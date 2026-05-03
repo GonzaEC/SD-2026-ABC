@@ -25,7 +25,7 @@ import json
 import base64
 from PIL import Image
 import io
-from sobel import sobel
+from TP3.Hit1.etapa1.sobel import sobel
 
 # -------------------------
 # LOGGING (MEMORIA + DISCO)
