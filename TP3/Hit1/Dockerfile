@@ -2,8 +2,8 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY . .
+COPY . /app/
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "worker.py"]
+CMD ["python", "etapa2/worker.py"]

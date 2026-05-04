@@ -3,11 +3,6 @@ Operador de Sobel - Proceso Centralizado
 ========================================
 Aplica el operador de Sobel a una imagen para detección de bordes.
 
-Uso:
-    python sobel.py <imagen_entrada> [imagen_salida]
-
-Ejemplo:
-    python sobel.py foto.jpg foto_sobel.jpg
 """
 
 import sys
@@ -15,7 +10,6 @@ import os
 import math
 import time
 from PIL import Image
-from pathlib import Path
 
 
 # ─── Máscaras del operador de Sobel ───────────────────────────────────────────
@@ -109,35 +103,3 @@ def build_output_path(input_path: str) -> str:
     return f"{base}_sobel{ext if ext else '.png'}"
 
 
-def main():
-    # ── Validar argumentos ───────────────────────────────────────────────────
-    if len(sys.argv) < 2:
-        print(__doc__)
-        sys.exit(1)
-    
-    input_path  = Path(sys.argv[1]).resolve()
-    output_path = sys.argv[2] if len(sys.argv) >= 3 else build_output_path(input_path)
-    
-    
-    if not input_path.is_file():
-        print(f"[ERROR] No se encontró el archivo: {input_path}")
-        sys.exit(1)
-
-    # ── Procesar ─────────────────────────────────────────────────────────────
-    print(f"Leyendo imagen:  {input_path}")
-    image = Image.open(input_path)
-    print(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
-    
-    print("Aplicando operador de Sobel...")
-    resultado = sobel(image)
-
-    resultado.save(output_path)
-    print(f"Imagen guardada: {output_path}")
-    print("¡Listo!")
-    fin = time.time()
-    tiempo = fin - inicio
-    print("tiempo ", tiempo )
-
-
-if __name__ == "__main__":
-    main()

@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 import json
-import joiner
+import TP3.Hit1.etapa2.joiner as joiner
 import base64
 from PIL import Image
 from pathlib import Path
@@ -42,5 +42,5 @@ def test_joiner_procesa_ok(monkeypatch):
 
     # verifica ACK
     channel.basic_ack.assert_called_once()
-
+    #verificamos que se haya devuelto la imagen correctamente
     assert outputPath.exists()

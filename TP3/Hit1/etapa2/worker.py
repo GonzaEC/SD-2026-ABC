@@ -25,7 +25,7 @@ import json
 import base64
 from PIL import Image
 import io
-from TP3.Hit1.etapa1.sobel import sobel
+from sobel import sobel
 
 # -------------------------
 # LOGGING (MEMORIA + DISCO)
@@ -87,8 +87,7 @@ def procesar_mensaje(ch, method, properties, body):
             mensaje["fragmentos"],
             len(mensaje["imagen"]))
     
-    # Confirmar que el mensaje fue procesado correctamente (ACK manual)
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    
     #luego se envia el resultado por la cola de resultados
     mensaje_actual["indice"] = indice
     mensaje_actual["resultado"] =  resultado
@@ -119,6 +118,8 @@ def procesar_mensaje(ch, method, properties, body):
         )
     )
     log.info(f"[Worker {WORKER_ID}] Enviado a Joiner: {mensaje_actual}")
+    # Confirmar que el mensaje fue procesado correctamente (ACK manual)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
     
     
 def conectar_rabbit():

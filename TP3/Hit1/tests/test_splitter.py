@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 import json
-import splitter
+import TP3.Hit1.etapa2.splitter as splitter
 from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 inputPath = BASE_DIR / "FondoCristiano.jpg"

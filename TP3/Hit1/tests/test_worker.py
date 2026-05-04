@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 import json
-import worker
+import TP3.Hit1.etapa2.worker as worker
 import base64
 from PIL import Image
 from pathlib import Path
