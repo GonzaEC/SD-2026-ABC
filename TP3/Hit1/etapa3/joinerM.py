@@ -15,6 +15,10 @@ import base64
 from PIL import Image
 import io
 import sys
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -24,7 +28,8 @@ log = logging.getLogger(__name__)
 logging.getLogger("pika").setLevel(logging.WARNING)
 listaFragmentos = []
 # Conectar al broker
-credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
+credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
+    os.environ["RABBITMQ_PASS"])
 connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost',
                                     port = 5672,

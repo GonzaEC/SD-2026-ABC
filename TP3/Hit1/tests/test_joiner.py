@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 import json
-import TP3.Hit1.etapa2.joiner as joiner
+import etapa2.joiner as joiner
 import base64
 from PIL import Image
 from pathlib import Path

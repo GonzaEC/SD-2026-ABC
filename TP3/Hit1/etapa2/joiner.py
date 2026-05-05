@@ -15,7 +15,10 @@ import base64
 from PIL import Image
 import io
 import sys
+from dotenv import load_dotenv
+from pathlib import Path
 
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -75,10 +78,10 @@ def joinResultado(ch, method, properties, body):
                     y_actual += imgActual.height
         result.save(output_path)
         log.info(f"[Joiner] Imagen guardada: {output_path}")
-        log.info("¡Listo!")
-        
+        log.info("¡Listo!")     
     else:
         log.info(f"[Joiner] imagen en proceso")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
     
     
     
@@ -94,7 +97,8 @@ def main():
     threading.Thread(target=iniciar_api, daemon=True).start()
 
     # Conectar al broker
-    credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
+    credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
+    os.environ["RABBITMQ_PASS"])
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='localhost',
                                   port = 5672,
@@ -112,7 +116,7 @@ def main():
     channel.basic_consume(
         queue='resultado',
         on_message_callback=joinResultado,
-        auto_ack=True  # ACK automatico
+        auto_ack=False
     )
     
 

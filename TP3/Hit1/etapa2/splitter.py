@@ -22,7 +22,10 @@ from PIL import Image
 import io
 import base64
 import json
+from dotenv import load_dotenv
+from pathlib import Path
 
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
@@ -80,7 +83,8 @@ def main():
     height = image.height
     fragmento_height = height // WORKERS
     # Conectar al broker
-    credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
+    credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
+        os.environ["RABBITMQ_PASS"])
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='localhost',
                                   port = 5672,

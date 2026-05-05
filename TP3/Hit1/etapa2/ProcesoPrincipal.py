@@ -12,8 +12,8 @@ Ejemplo:
 import sys
 import os
 import subprocess
-from TP3.Hit1.etapa2.joiner import main
-from TP3.Hit1.etapa2.splitter import main
+from joiner import main
+from splitter import main
 import logging
 import threading
 from fastapi import FastAPI

@@ -25,7 +25,11 @@ import json
 import base64
 from PIL import Image
 import io
-from sobel import sobel
+from etapa2.sobel import sobel
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # -------------------------
 # LOGGING (MEMORIA + DISCO)
@@ -125,7 +129,8 @@ def procesar_mensaje(ch, method, properties, body):
 def conectar_rabbit():
     while True:
         try:
-            credencial= pika.PlainCredentials("sobel_user", "sobel_pass")
+            credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
+                os.environ["RABBITMQ_PASS"])
             connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='rabbitmq',
                                   port = 5672,

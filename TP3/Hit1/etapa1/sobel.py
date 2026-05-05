@@ -7,7 +7,7 @@ Uso:
     python sobel.py <imagen_entrada> [imagen_salida]
 
 Ejemplo:
-    python sobel.py foto.jpg foto_sobel.jpg
+    python sobel.py /TP3/Hit1/FondoCristiano.jpg output.jpg
 """
 
 import sys
@@ -167,7 +167,7 @@ def main():
     log.info("¡Listo!")
     fin = time.time()
     tiempo = fin - inicio
-    log.info("tiempo ", tiempo )
+    log.info("tiempo %s", tiempo )
 
 
 if __name__ == "__main__":
