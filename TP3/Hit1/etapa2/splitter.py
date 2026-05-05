@@ -59,21 +59,21 @@ def iniciar_api():
 def main(): 
     # ── Validar argumentos ───────────────────────────────────────────────────
     if len(sys.argv) < 1:
-        print(__doc__)
+        log.info(__doc__)
         sys.exit(1)
 
     input_path  = sys.argv[1]
     
 
     if not os.path.isfile(input_path):
-        print(f"[ERROR] No se encontró el archivo: {input_path}")
+        log.info(f"[ERROR] No se encontró el archivo: {input_path}")
         sys.exit(1)
     
     
     # ── Procesar ─────────────────────────────────────────────────────────────
-    print(f"Leyendo imagen:  {input_path}")
+    log.info(f"Leyendo imagen:  {input_path}")
     image = Image.open(input_path)
-    print(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
+    log.info(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
     threading.Thread(target=iniciar_api, daemon=True).start()
 
     # ── Dividir en partes ─────────────────────────────────────────────────────────────

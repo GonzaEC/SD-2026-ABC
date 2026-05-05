@@ -131,11 +131,11 @@ def conectar_rabbit():
                                   port = 5672,
                                   credentials=credencial)
             )
-            print("Conectado a rabbitmq")
+            log.info("Conectado a rabbitmq")
             return connection
 
         except pika.exceptions.AMQPConnectionError:
-            print("rabbitmq no disponible, reintentando...")
+            log.info("rabbitmq no disponible, reintentando...")
             time.sleep(5)
 
 def main():
