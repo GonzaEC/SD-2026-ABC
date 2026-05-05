@@ -1,0 +1,11 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY consumidor.py .
+
+RUN pip install --no-cache-dir pika fastapi uvicorn
+
+EXPOSE 8003
+
+CMD ["python", "consumidor.py"]

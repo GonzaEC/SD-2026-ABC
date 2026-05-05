@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumidor-retry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumidor-retry
+  template:
+    metadata:
+      labels:
+        app: consumidor-retry
+    spec:
+      containers:
+        - name: consumidor
+          image: consumidor-retry:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq

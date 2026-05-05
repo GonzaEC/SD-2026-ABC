@@ -1,0 +1,5 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY productor.py .
+RUN pip install pika fastapi uvicorn
+CMD ["python", "productor.py"]

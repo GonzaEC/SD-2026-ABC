@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: productor-retry
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: productor
+          image: productor-retry:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq

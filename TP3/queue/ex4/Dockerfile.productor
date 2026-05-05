@@ -1,0 +1,11 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY productor.py .
+
+RUN pip install --no-cache-dir pika fastapi uvicorn
+
+EXPOSE 9001
+
+CMD ["python", "productor.py"]

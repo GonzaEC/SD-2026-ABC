@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suscriptor
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: suscriptor
+  template:
+    metadata:
+      labels:
+        app: suscriptor
+    spec:
+      containers:
+        - name: suscriptor
+          image: suscriptor-ex2:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq

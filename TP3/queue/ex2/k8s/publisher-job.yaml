@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: publicador
+spec:
+  template:
+    spec:
+      containers:
+        - name: publicador
+          image: publicador-ex2:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+      restartPolicy: Never

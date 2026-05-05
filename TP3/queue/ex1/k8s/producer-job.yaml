@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: productor
+spec:
+  template:
+    spec:
+      containers:
+        - name: productor
+          image: productor-ex1:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+          ports:
+            - containerPort: 9000
+      restartPolicy: Never

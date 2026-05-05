@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumidor-principal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumidor-principal
+  template:
+    metadata:
+      labels:
+        app: consumidor-principal
+    spec:
+      containers:
+        - name: consumidor
+          image: consumidor-dlq:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
