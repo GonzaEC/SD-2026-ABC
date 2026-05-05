@@ -75,7 +75,7 @@ def joinResultado(ch, method, properties, body):
                     y_actual += imgActual.height
         result.save(output_path)
         log.info(f"[Joiner] Imagen guardada: {output_path}")
-        print("¡Listo!")
+        log.info("¡Listo!")
         
     else:
         log.info(f"[Joiner] imagen en proceso")

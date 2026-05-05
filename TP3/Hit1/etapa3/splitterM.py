@@ -40,7 +40,7 @@ class SplitterM:
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(LOG_DIR, "splitter.log")),
+            logging.FileHandler(os.path.join(LOG_DIR, "splitterM.log")),
             logging.StreamHandler()
         ]
     )
@@ -50,7 +50,7 @@ class SplitterM:
     @app.get("/health")
     def health():
         return {
-            "servicio": "splitter",
+            "servicio": "splitterM",
             "status": "running"
         }
 

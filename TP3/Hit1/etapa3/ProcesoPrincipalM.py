@@ -1,3 +1,15 @@
+"""
+Operador de Sobel Master-Worker con tolerancia a fallos - Proceso Distribuido
+========================================
+Aplica el operador de Sobel a fragmentos de una imagen y las unifica para detección de bordes.
+
+Uso:
+    python ProcesoPrincipalM.py <PATH_IMAGEN> <PATH_OUTPUT>
+
+Ejemplo:
+    python ProcesoPrincipalM.py /TP3/Hit1/FondoCristiano.jpg output.jpg
+"""
+
 import sys
 import os
 import subprocess
@@ -31,7 +43,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join(LOG_DIR, "splitter.log")),
+        logging.FileHandler(os.path.join(LOG_DIR, "ProcesoPrincipalM.log")),
         logging.StreamHandler()
     ]
 )
@@ -46,6 +58,9 @@ def health():
         "joiner": "running"
     }
 
+def iniciar_api():
+    uvicorn.run(app, host="0.0.0.0", port=9012)
+
 def build_output_path(input_path: str) -> str:
     """Genera el nombre de salida agregando '_sobel' antes de la extensión."""
     base, ext = os.path.splitext(input_path)
@@ -56,7 +71,7 @@ def build_output_path(input_path: str) -> str:
 def main(): 
     # ── Validar argumentos ───────────────────────────────────────────────────
     if len(sys.argv) < 2:
-        print(__doc__)
+        log.info(__doc__)
         sys.exit(1)
     
     input_path  = Path(sys.argv[1]).resolve()
@@ -64,14 +79,14 @@ def main():
     
     
     if not input_path.is_file():
-        print(f"[ERROR] No se encontró el archivo: {input_path}")
+        log.info(f"[ERROR] No se encontró el archivo: {input_path}")
         sys.exit(1)
     
-    
+    iniciar_api()
     # ── Procesar ─────────────────────────────────────────────────────────────
-    print(f"Leyendo imagen:  {input_path}")
+    log.info(f"Leyendo imagen:  {input_path}")
     image = Image.open(input_path)
-    print(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
+    log.info(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
     
     try:
         #iniciamos el splitter 

@@ -16,7 +16,38 @@ import math
 import time
 from PIL import Image
 from pathlib import Path
+from fastapi import FastAPI
+import uvicorn
+import logging
+import threading
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+app = FastAPI()
+os.makedirs(LOG_DIR, exist_ok=True)
+log = logging.getLogger(__name__)
+logging.getLogger("pika").setLevel(logging.WARNING)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(LOG_DIR, "splitter.log")),
+        logging.StreamHandler()
+    ]
+)
+log = logging.getLogger(__name__)
+logging.getLogger("pika").setLevel(logging.WARNING)
+
+app = FastAPI()
+@app.get("/health")
+def health():
+    return {
+        "servicio": "sobel",
+        "status": "running"
+    }
+
+def iniciar_api():
+    uvicorn.run(app, host="0.0.0.0", port=9010)
 
 # ─── Máscaras del operador de Sobel ───────────────────────────────────────────
 # Detectan cambios de intensidad en dirección horizontal (Gx) y vertical (Gy)
@@ -112,7 +143,7 @@ def build_output_path(input_path: str) -> str:
 def main():
     # ── Validar argumentos ───────────────────────────────────────────────────
     if len(sys.argv) < 2:
-        print(__doc__)
+        log.info(__doc__)
         sys.exit(1)
     
     input_path  = Path(sys.argv[1]).resolve()
@@ -120,23 +151,23 @@ def main():
     
     
     if not input_path.is_file():
-        print(f"[ERROR] No se encontró el archivo: {input_path}")
+        log.info(f"[ERROR] No se encontró el archivo: {input_path}")
         sys.exit(1)
-
+    threading.Thread(target=iniciar_api, daemon=True).start()
     # ── Procesar ─────────────────────────────────────────────────────────────
-    print(f"Leyendo imagen:  {input_path}")
+    log.info(f"Leyendo imagen:  {input_path}")
     image = Image.open(input_path)
-    print(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
+    log.info(f"Tamaño:          {image.size[0]}×{image.size[1]} px  |  Modo: {image.mode}")
     
-    print("Aplicando operador de Sobel...")
+    log.info("Aplicando operador de Sobel...")
     resultado = sobel(image)
 
     resultado.save(output_path)
-    print(f"Imagen guardada: {output_path}")
-    print("¡Listo!")
+    log.info(f"Imagen guardada: {output_path}")
+    log.info("¡Listo!")
     fin = time.time()
     tiempo = fin - inicio
-    print("tiempo ", tiempo )
+    log.info("tiempo ", tiempo )
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ class JoinerM:
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(os.path.join(LOG_DIR, "joiner.log")),
+            logging.FileHandler(os.path.join(LOG_DIR, "joinerM.log")),
             logging.StreamHandler()
         ]
     )
@@ -49,7 +49,7 @@ class JoinerM:
     @app.get("/health")
     def health():
         return {
-            "servicio": "joiner",
+            "servicio": "joinerM",
             "status": "running"
         }
 
@@ -97,7 +97,7 @@ class JoinerM:
                         
             result.save(self.output_path)
             log.info(f"[Joiner] Imagen guardada: {self.output_path}")
-            print("¡Listo!")
+            log.info("¡Listo!")
             
             
         else:
@@ -110,12 +110,7 @@ class JoinerM:
 
 
     def main(self):
-
-        
         threading.Thread(target=self.iniciar_api, daemon=True).start()
-
-        
-        
 
         # Declarar la misma cola que el productor (idempotente)
         channel.queue_declare(queue='resultado', durable=True)
