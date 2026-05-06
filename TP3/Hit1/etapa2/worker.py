@@ -25,7 +25,7 @@ import json
 import base64
 from PIL import Image
 import io
-from etapa2.sobel import sobel
+from sobel import sobel
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -78,6 +78,8 @@ def iniciar_api():
 
 
 def procesar_mensaje(ch, method, properties, body):
+    if method.redelivered:
+        log.info(f"[Worker {WORKER_ID}] REINTENTO detectado")
     mensaje = json.loads(body)
     log.info(f"[Worker {WORKER_ID}] Recibido: {mensaje}")
     

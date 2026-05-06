@@ -93,7 +93,7 @@ class SplitterM:
                 "fragmentos": WORKERS,
             }
             self.tareas[i] = {
-                "t0": time.time(),
+                "t0": time.monotonic(),
                 "estado": "pendiente",
                 "payload": mensaje
             }

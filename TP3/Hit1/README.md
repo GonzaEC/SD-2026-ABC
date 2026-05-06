@@ -262,73 +262,75 @@ python sobel.py <PATH_IMAGEN> <PATH_OUTPUT>
 
 ---
 # Ejecucion de la etapa 2
-# 3.2. Construir imagen del worker
+# 3.2. Creamos el cluster
 ```bash
-docker build -t grupoABC/sobel-worker:latest .
+k3d cluster create sobel
 ```
 ---
-# 4.2. Aplicar archivos de rabbitMQ y de los workers
+# 4.2. Construir imagen del worker e importarla al cluster
+```bash
+docker build -t grupoABC/sobel-worker:latest .
+k3d image import grupoABC/sobel-worker:latest -c sobel
+```
+---
+# 5.2. Aplicar archivos de rabbitMQ y de los workers
 
 ```bash
 kubectl apply -f rabbitmq.yaml -f workers.yaml
 ```
 ---
 
-# 5.2. Exponer puerto de rabbitMQ
+# 6.2. Exponer puerto de rabbitMQ
 
 ```bash
 kubectl port-forward svc/rabbitmq 5672:5672
 ```
-# 6.2. Seleccionar ubicacion de la etapa 2
+# 7.2. Seleccionar ubicacion de la etapa 2
 En otra terminal:
 ```bash
 cd ./etapa2
 ```
-# 7.2. Ejecutar el Proceso Principal
+# 8.2. Ejecutar el Proceso Principal
 
 ```bash
 python ProcesoPrincipal.py <PATH_IMAGEN> <PATH_OUTPUT>
 ```
 
 # Ejecucion de la etapa 3
-# 3.3. Construir imagen del worker
+# 3.3. Creamos el cluster
 ```bash
-docker build -t grupoABC/sobel-worker:latest .
+k3d cluster create sobel
 ```
 ---
-# 4.3. Aplicar archivos de rabbitMQ y de los workers
+# 4.3. Construir imagen del worker e importarla al cluster
+```bash
+docker build -t grupoABC/sobel-worker:latest .
+k3d image import grupoABC/sobel-worker:latest -c sobel
+```
+---
+# 5.3. Aplicar archivos de rabbitMQ y de los workers
 
 ```bash
 kubectl apply -f rabbitmq.yaml -f workers.yaml
 ```
 ---
 
-# 5.3. Exponer puerto de rabbitMQ
+# 6.3. Exponer puerto de rabbitMQ
 
 ```bash
 kubectl port-forward svc/rabbitmq 5672:5672
 ```
-# 6.3. Seleccionar ubicacion de la etapa 3
+# 7.3. Seleccionar ubicacion de la etapa 3
 En otra terminal:
 ```bash
 cd ./etapa3
 ```
-# 7.3. Ejecutar el Proceso Principal
+# 8.3. Ejecutar el Proceso Principal
 
 
 ```bash
 python ProcesoPrincipalM.py <PATH_IMAGEN> <PATH_OUTPUT>
 ```
-Salida esperada del lado del servidor cuando está activo:
-
-```
-2026-04-06 16:58:55,513 - INFO - Se esta procesando una nueva tarea mediante POST: {'calculo': 'suma', 'parametros': '[2,3]', 'adicional': {'redondeo': -1, 'absoluto': False}, 'imagen': 'ianott/servicio-tarea'}
-
-INFO:     172.18.0.1:59504 - "POST /getRemoteTask HTTP/1.1" 200 OK
-```
-Salida esperada del lado del cliente:
-2026-04-06 17:00:14,787 - INFO - {'resultado': 5}
-
 
 
 ### Instrucciones para ejecutar el test

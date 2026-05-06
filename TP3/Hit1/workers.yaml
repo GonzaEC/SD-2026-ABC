@@ -12,6 +12,7 @@ spec:
       containers:
       - name: worker
         image: grupoABC/sobel-worker:latest
+        imagePullPolicy: IfNotPresent
         env:
         - name: RABBIT_HOST
           value: "rabbitmq"             # ← DNS interno del cluster, apunta al Service

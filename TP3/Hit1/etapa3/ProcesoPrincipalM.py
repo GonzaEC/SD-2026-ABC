@@ -35,7 +35,7 @@ from pathlib import Path
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
-TIMEOUT = 30
+TIMEOUT = 20
 tareas = {}
 cola_publicaciones = queue.Queue()
 
@@ -62,7 +62,7 @@ def health():
     }
 
 def iniciar_api():
-    uvicorn.run(app, host="0.0.0.0", port=9012)
+    uvicorn.run(app, host="0.0.0.0", port=9013)
 
 def build_output_path(input_path: str) -> str:
     """Genera el nombre de salida agregando '_sobel' antes de la extensión."""
@@ -85,7 +85,7 @@ def main():
         log.info(f"[ERROR] No se encontró el archivo: {input_path}")
         sys.exit(1)
     
-    iniciar_api()
+    threading.Thread(target=iniciar_api, daemon=True).start()
     # ── Procesar ─────────────────────────────────────────────────────────────
     log.info(f"Leyendo imagen:  {input_path}")
     image = Image.open(input_path)
@@ -114,7 +114,7 @@ def loop():
     while True:
         for i, t in list(tareas.items()):
             if t["estado"] == "pendiente" and time.monotonic() - t["t0"] > TIMEOUT:
-                cola_publicaciones.put(t["payload"]) #se reenvia el fragmento
+                log.info("[Splitter] se detecto fallo en un worker")
                 t["t0"] = time.monotonic()
                 log.info(f"[Splitter] Reenviando tarea {i}")
         time.sleep(1)
