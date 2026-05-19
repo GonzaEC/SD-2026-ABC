@@ -18,9 +18,9 @@ spec:
         env:
         #declaro usuario para permitir conexion externa
         - name: RABBITMQ_DEFAULT_USER
-          value: "sobel_user"
+          value: ${RABBITMQ_DEFAULT_USER}
         - name: RABBITMQ_DEFAULT_PASS
-          value: "sobel_pass"
+          value: ${RABBITMQ_DEFAULT_PASS}
 ---
 apiVersion: v1
 kind: Service
