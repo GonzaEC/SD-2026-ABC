@@ -1,0 +1,32 @@
+# rabbitmq.yaml — el broker (1 réplica, persistente)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: rabbitmq } }
+  template:
+    metadata: { labels: { app: rabbitmq } }
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672    # AMQP
+        - containerPort: 15672   # UI
+        env:
+        #declaro usuario para permitir conexion externa
+        - name: RABBITMQ_DEFAULT_USER
+          value: ${RABBITMQ_DEFAULT_USER}
+        - name: RABBITMQ_DEFAULT_PASS
+          value: ${RABBITMQ_DEFAULT_PASS}
+---
+apiVersion: v1
+kind: Service
+metadata: { name: rabbitmq }
+spec:
+  selector: { app: rabbitmq }
+  ports:
+  - { name: amqp,   port: 5672,  targetPort: 5672 }
+  - { name: admin,  port: 15672, targetPort: 15672 }
