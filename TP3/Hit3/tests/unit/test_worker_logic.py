@@ -33,16 +33,18 @@ class TestExponentialBackoff:
     """Verifica que conectar_rabbit usa los delays correctos antes de conectar."""
 
     def test_conecta_al_primer_intento(self):
+        import worker
         mock_conn = MagicMock()
-        with patch("worker.pika.BlockingConnection", return_value=mock_conn) as mock_bc:
-            with patch("worker.pika.PlainCredentials", return_value=MagicMock()):
-                import worker
-                conn = worker.conectar_rabbit()
+        with patch("worker.pika.PlainCredentials", return_value=MagicMock()):
+            with patch("worker.pika.ConnectionParameters", return_value=MagicMock()):
+                with patch("worker.pika.BlockingConnection", return_value=mock_conn) as mock_bc:
+                    conn = worker.conectar_rabbit()
 
         assert conn is mock_conn
         mock_bc.assert_called_once()
 
     def test_reintenta_con_backoff(self):
+        import worker
         import pika
         mock_conn = MagicMock()
         falla_y_exito = [
@@ -52,13 +54,12 @@ class TestExponentialBackoff:
         ]
 
         with patch("worker.pika.PlainCredentials", return_value=MagicMock()):
-            with patch("worker.pika.BlockingConnection", side_effect=falla_y_exito):
-                with patch("worker.time.sleep") as mock_sleep:
-                    import worker
-                    conn = worker.conectar_rabbit()
+            with patch("worker.pika.ConnectionParameters", return_value=MagicMock()):
+                with patch("worker.pika.BlockingConnection", side_effect=falla_y_exito):
+                    with patch("worker.time.sleep") as mock_sleep:
+                        conn = worker.conectar_rabbit()
 
         sleeps = [c.args[0] for c in mock_sleep.call_args_list]
-        # Primer delay = 1s, segundo delay = 2s
         assert sleeps[0] == 1
         assert sleeps[1] == 2
         assert conn is mock_conn
