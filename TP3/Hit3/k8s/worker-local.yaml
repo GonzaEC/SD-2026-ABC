@@ -1,0 +1,52 @@
+# Manifest solo para testing local con k3d.
+# En producción los workers son VMs (Compute Engine) fuera del cluster.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: sobel
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      nodeSelector:
+        nodegroup: apps
+      tolerations:
+        - key: nodegroup
+          value: apps
+          effect: NoSchedule
+      containers:
+        - name: worker
+          image: sobel-worker:local
+          imagePullPolicy: Never
+          env:
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: user
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: pass
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5

@@ -1,0 +1,77 @@
+name: "Hit3 | Pipeline 1 — Infraestructura GKE"
+
+# Construye el cluster GKE con Terraform (node pools infra + apps) y el firewall.
+# Los worker VMs se gestionan por separado en el Pipeline 2.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "TP3/Hit3/terraform/**"
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Acción de Terraform"
+        required: true
+        default: apply
+        type: choice
+        options: [plan, apply, destroy]
+
+env:
+  TF_DIR: TP3/Hit3/terraform
+  TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+  TF_VAR_region: ${{ vars.GCP_REGION }}
+  TF_VAR_zone: ${{ vars.GCP_ZONE }}
+  TF_VAR_docker_image: ${{ vars.WORKER_IMAGE }}
+  TF_VAR_rabbitmq_host: ${{ vars.RABBITMQ_LB_IP }}
+  TF_VAR_rabbitmq_user: ${{ vars.RABBITMQ_USER }}
+  TF_VAR_rabbitmq_pass: ${{ secrets.RABBITMQ_PASS }}
+  # worker_count=0 en este pipeline: los workers los maneja el Pipeline 2
+  TF_VAR_worker_count: "0"
+
+jobs:
+  terraform:
+    name: Terraform — GKE Cluster
+    runs-on: ubuntu-latest
+
+    # id-token:write es requerido para OIDC / Workload Identity Federation.
+    # Zero static keys: GCP autentica al runner via token efímero de GitHub.
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~> 1.5"
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.action == 'apply')
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve tfplan
+
+      - name: Terraform Destroy
+        if: inputs.action == 'destroy'
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform destroy -auto-approve

@@ -1,0 +1,119 @@
+name: "Hit3 | Pipeline 1.1 — Servicios Base (RabbitMQ, Redis, Setup)"
+
+# Despliega en el nodegroup de infraestructura: RabbitMQ, Redis.
+# Luego ejecuta el Job de setup que inicializa todos los exchanges/queues/DLX.
+# Prerequisito: el cluster GKE ya debe existir (Pipeline 1).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "TP3/Hit3/k8s/rabbitmq.yaml"
+      - "TP3/Hit3/k8s/redis.yaml"
+      - "TP3/Hit3/k8s/setup-job.yaml"
+      - "TP3/Hit3/services/setup/**"
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_ZONE: ${{ vars.GCP_ZONE }}
+  GKE_CLUSTER: sobel-cluster
+  NAMESPACE: sobel
+  SETUP_IMAGE: gcr.io/${{ vars.GCP_PROJECT_ID }}/sobel-setup
+
+jobs:
+  build-setup-image:
+    name: Build & Push imagen de setup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Configurar Docker para GCR
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build & Push sobel-setup
+        run: |
+          docker build \
+            -t ${{ env.SETUP_IMAGE }}:${{ github.sha }} \
+            -t ${{ env.SETUP_IMAGE }}:latest \
+            TP3/Hit3/services/setup/
+          docker push ${{ env.SETUP_IMAGE }}:${{ github.sha }}
+          docker push ${{ env.SETUP_IMAGE }}:latest
+
+  deploy-base:
+    name: Deploy RabbitMQ + Redis + Setup Job
+    runs-on: ubuntu-latest
+    needs: build-setup-image
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Obtener credenciales GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GCP_ZONE }}
+
+      - name: Crear namespace
+        run: kubectl apply -f TP3/Hit3/k8s/namespace.yaml
+
+      - name: Deploy RabbitMQ
+        run: kubectl apply -f TP3/Hit3/k8s/rabbitmq.yaml -n ${{ env.NAMESPACE }}
+
+      - name: Deploy Redis
+        run: kubectl apply -f TP3/Hit3/k8s/redis.yaml -n ${{ env.NAMESPACE }}
+
+      - name: Esperar a que RabbitMQ esté listo
+        run: |
+          kubectl rollout status deployment/rabbitmq \
+            -n ${{ env.NAMESPACE }} \
+            --timeout=120s
+
+      - name: Esperar a que Redis esté listo
+        run: |
+          kubectl rollout status deployment/redis \
+            -n ${{ env.NAMESPACE }} \
+            --timeout=60s
+
+      - name: Actualizar imagen del setup job
+        run: |
+          sed -i "s|gcr.io/mi-proyecto/sobel-setup:latest|${{ env.SETUP_IMAGE }}:${{ github.sha }}|g" \
+            TP3/Hit3/k8s/setup-job.yaml
+
+      - name: Eliminar job anterior (si existe)
+        run: |
+          kubectl delete job rabbitmq-setup -n ${{ env.NAMESPACE }} --ignore-not-found
+
+      - name: Ejecutar setup job
+        run: kubectl apply -f TP3/Hit3/k8s/setup-job.yaml -n ${{ env.NAMESPACE }}
+
+      - name: Esperar a que el setup job complete
+        run: |
+          kubectl wait job/rabbitmq-setup \
+            -n ${{ env.NAMESPACE }} \
+            --for=condition=complete \
+            --timeout=120s
+
+      - name: Logs del setup job
+        if: always()
+        run: |
+          kubectl logs job/rabbitmq-setup -n ${{ env.NAMESPACE }} || true

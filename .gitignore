@@ -48,7 +48,53 @@ htmlcov/
 Thumbs.db
 
 # =========================
-# Archivos de entorno
+# Archivos de entorno y secrets — NUNCA commitear
 # =========================
 .env
+.env.*
+*.env
+!*.env.example
+
+# =========================
+# Terraform — state y credenciales
+# =========================
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# =========================
+# GCP / Google Cloud
+# =========================
+*.json
+!package.json
+!package-lock.json
+service-account*.json
+credentials*.json
+keyfile*.json
+gcp-key*.json
+
+# =========================
+# Docker
+# =========================
+.dockerignore
+
+# =========================
+# Logs (persistidos en disco por los servicios)
+# =========================
+logs/
+*.log
+
+# =========================
+# Kubernetes secrets generados
+# =========================
+*-secret.yaml
+*-secrets.yaml
+kubeconfig
 

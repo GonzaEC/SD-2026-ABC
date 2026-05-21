@@ -1,0 +1,65 @@
+name: "Hit3 | Pipeline 1.3 — Split"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "TP3/Hit3/services/split/**"
+      - "TP3/Hit3/k8s/split.yaml"
+  workflow_dispatch:
+
+env:
+  GKE_CLUSTER: sobel-cluster
+  GCP_ZONE: ${{ vars.GCP_ZONE }}
+  NAMESPACE: sobel
+  IMAGE: gcr.io/${{ vars.GCP_PROJECT_ID }}/sobel-split
+
+jobs:
+  build-and-deploy:
+    name: Build, Push & Deploy Split
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Configurar Docker para GCR
+        run: gcloud auth configure-docker gcr.io --quiet
+
+      - name: Build & Push
+        run: |
+          docker build \
+            -t ${{ env.IMAGE }}:${{ github.sha }} \
+            -t ${{ env.IMAGE }}:latest \
+            TP3/Hit3/services/split/
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
+
+      - name: Obtener credenciales GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GCP_ZONE }}
+
+      - name: Deploy
+        run: kubectl apply -f TP3/Hit3/k8s/split.yaml -n ${{ env.NAMESPACE }}
+
+      - name: Actualizar imagen con SHA del commit
+        run: |
+          kubectl set image deployment/split \
+            split=${{ env.IMAGE }}:${{ github.sha }} \
+            -n ${{ env.NAMESPACE }}
+
+      - name: Esperar rollout
+        run: |
+          kubectl rollout status deployment/split \
+            -n ${{ env.NAMESPACE }} \
+            --timeout=120s

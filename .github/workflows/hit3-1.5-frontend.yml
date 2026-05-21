@@ -1,0 +1,45 @@
+name: "Hit3 | Pipeline 1.5 — Frontend"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "TP3/Hit3/k8s/frontend.yaml"
+  workflow_dispatch:
+
+env:
+  GKE_CLUSTER: sobel-cluster
+  GCP_ZONE: ${{ vars.GCP_ZONE }}
+  NAMESPACE: sobel
+
+jobs:
+  deploy-frontend:
+    name: Deploy Frontend (nginx)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Obtener credenciales GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GCP_ZONE }}
+
+      - name: Deploy
+        run: kubectl apply -f TP3/Hit3/k8s/frontend.yaml -n ${{ env.NAMESPACE }}
+
+      - name: Esperar rollout
+        run: |
+          kubectl rollout status deployment/frontend \
+            -n ${{ env.NAMESPACE }} \
+            --timeout=60s

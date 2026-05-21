@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: sobel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      nodeSelector:
+        nodegroup: infra
+      tolerations:
+        - key: nodegroup
+          value: infra
+          effect: NoSchedule
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 15672
+              name: management
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: user
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: pass
+          readinessProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "ping"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+# ClusterIP para acceso interno desde pods del cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: sobel
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: management
+      port: 15672
+      targetPort: 15672
+---
+# LoadBalancer interno para que las worker VMs (fuera del cluster) puedan conectarse
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-lb
+  namespace: sobel
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+spec:
+  type: LoadBalancer
+  selector:
+    app: rabbitmq
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-secret
+  namespace: sobel
+type: Opaque
+stringData:
+  user: "user"
+  pass: "password"

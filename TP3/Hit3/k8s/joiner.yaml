@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joiner
+  namespace: sobel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joiner
+  template:
+    metadata:
+      labels:
+        app: joiner
+    spec:
+      nodeSelector:
+        nodegroup: apps
+      tolerations:
+        - key: nodegroup
+          value: apps
+          effect: NoSchedule
+      initContainers:
+        - name: wait-rabbitmq
+          image: busybox
+          command:
+            - sh
+            - -c
+            - until nc -z rabbitmq 5672; do echo "Esperando RabbitMQ..."; sleep 3; done
+        - name: wait-redis
+          image: busybox
+          command:
+            - sh
+            - -c
+            - until nc -z redis 6379; do echo "Esperando Redis..."; sleep 3; done
+      containers:
+        - name: joiner
+          image: gcr.io/mi-proyecto/sobel-joiner:latest
+          ports:
+            - containerPort: 9001
+          env:
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: user
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: pass
+            - name: REDIS_HOST
+              value: "redis"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9001
+            initialDelaySeconds: 10
+            periodSeconds: 5

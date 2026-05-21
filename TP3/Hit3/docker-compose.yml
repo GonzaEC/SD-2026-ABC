@@ -1,0 +1,109 @@
+services:
+
+  # ── Infraestructura ───────────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # Management UI → http://localhost:15672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  # ── Setup (corre una sola vez y termina) ──────────────────────────────────
+  setup:
+    build: services/setup/
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # ── Workers Sobel (escalar con --scale worker=N) ──────────────────────────
+  worker:
+    build: services/worker/
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+      WORKER_ID: worker-local
+      LOG_DIR: /app/logs
+    volumes:
+      - worker-logs:/app/logs
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    deploy:
+      replicas: 3
+
+  # ── Aplicaciones ──────────────────────────────────────────────────────────
+  split:
+    build: services/split/
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+      WORKERS: "3"
+      LOG_DIR: /app/logs
+    volumes:
+      - split-logs:/app/logs
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+
+  joiner:
+    build: services/joiner/
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+      REDIS_HOST: redis
+      LOG_DIR: /app/logs
+    volumes:
+      - joiner-logs:/app/logs
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  backend:
+    build: services/backend/
+    ports:
+      - "8080:8080"
+    environment:
+      SPLIT_HOST: split
+      SPLIT_PORT: "9000"
+      REDIS_HOST: redis
+      LOG_DIR: /app/logs
+    volumes:
+      - backend-logs:/app/logs
+    depends_on:
+      split:
+        condition: service_started
+      joiner:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+volumes:
+  worker-logs:
+  split-logs:
+  joiner-logs:
+  backend-logs:

@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rabbitmq-setup
+  namespace: sobel
+spec:
+  template:
+    spec:
+      nodeSelector:
+        nodegroup: apps
+      tolerations:
+        - key: nodegroup
+          value: apps
+          effect: NoSchedule
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-rabbitmq
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z rabbitmq 5672; do
+                echo "Esperando RabbitMQ...";
+                sleep 3;
+              done
+      containers:
+        - name: setup
+          image: gcr.io/mi-proyecto/sobel-setup:latest
+          env:
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: user
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: pass

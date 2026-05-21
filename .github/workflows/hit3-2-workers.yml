@@ -1,0 +1,136 @@
+name: "Hit3 | Pipeline 2 — Workers Dinámicos"
+
+# Escala las VMs worker según la profundidad de la cola 'tareas'.
+#
+# Triggers:
+#   - Cada 5 minutos (auto-scaling)
+#   - Manual (workflow_dispatch) con opción de forzar un número específico o destruir todo
+#
+# Lógica de escala:
+#   1. Consulta la Management API de RabbitMQ para leer mensajes pendientes en 'tareas'
+#   2. Calcula workers_deseados = ceil(mensajes / MESSAGES_PER_WORKER)
+#   3. Aplica terraform apply -var="worker_count=<N>"
+#
+# Variables de entorno requeridas (GitHub vars/secrets):
+#   vars:  GCP_PROJECT_ID, GCP_REGION, GCP_ZONE, RABBITMQ_LB_IP, RABBITMQ_USER
+#          WORKER_IMAGE, MIN_WORKERS, MAX_WORKERS, MESSAGES_PER_WORKER
+#   secrets: GCP_SA_KEY, RABBITMQ_PASS
+
+on:
+  schedule:
+    # Cada 5 minutos — ajustar según la latencia aceptable de auto-scaling
+    - cron: "*/5 * * * *"
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Acción"
+        required: true
+        default: scale
+        type: choice
+        options:
+          - scale       # escala automáticamente según la cola
+          - set         # fuerza un número específico de workers
+          - destroy     # destruye todos los workers (worker_count=0)
+      worker_count:
+        description: "Número de workers (solo para acción 'set')"
+        required: false
+        default: "3"
+
+env:
+  TF_DIR: TP3/Hit3/terraform
+  TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
+  TF_VAR_region: ${{ vars.GCP_REGION }}
+  TF_VAR_zone: ${{ vars.GCP_ZONE }}
+  TF_VAR_docker_image: ${{ vars.WORKER_IMAGE }}
+  TF_VAR_rabbitmq_host: ${{ vars.RABBITMQ_LB_IP }}
+  TF_VAR_rabbitmq_user: ${{ vars.RABBITMQ_USER }}
+  TF_VAR_rabbitmq_pass: ${{ secrets.RABBITMQ_PASS }}
+  # infra node pool: no se toca en este pipeline
+  TF_VAR_infra_pool_machine_type: "e2-standard-2"
+  TF_VAR_apps_pool_machine_type: "e2-standard-2"
+
+jobs:
+  scale-workers:
+    name: Calcular y aplicar escala de workers
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      # ── Calcular workers deseados ────────────────────────────────────────────
+      - name: Instalar dependencias del scaler
+        run: pip install requests
+
+      - name: Destruir todos los workers
+        if: inputs.action == 'destroy'
+        run: echo "DESIRED_WORKERS=0" >> $GITHUB_OUTPUT
+        id: destroy
+
+      - name: Forzar número específico de workers
+        if: inputs.action == 'set'
+        run: echo "DESIRED_WORKERS=${{ inputs.worker_count }}" >> $GITHUB_OUTPUT
+        id: set_count
+
+      - name: Calcular workers según cola (auto-scaling)
+        if: inputs.action == 'scale' || github.event_name == 'schedule'
+        id: scaler
+        env:
+          RABBITMQ_HOST: ${{ vars.RABBITMQ_LB_IP }}
+          RABBITMQ_USER: ${{ vars.RABBITMQ_USER }}
+          RABBITMQ_PASS: ${{ secrets.RABBITMQ_PASS }}
+          MIN_WORKERS: ${{ vars.MIN_WORKERS || '1' }}
+          MAX_WORKERS: ${{ vars.MAX_WORKERS || '10' }}
+          MESSAGES_PER_WORKER: ${{ vars.MESSAGES_PER_WORKER || '5' }}
+        run: python TP3/Hit3/scripts/scaler.py >> $GITHUB_OUTPUT
+
+      # El paso anterior escribe DESIRED_WORKERS en $GITHUB_OUTPUT.
+      # Consolidamos el valor independientemente de qué paso lo escribió.
+      - name: Leer workers deseados
+        id: workers
+        run: |
+          # Tomar el último valor de DESIRED_WORKERS escrito en GITHUB_OUTPUT
+          VALUE=$(grep "DESIRED_WORKERS=" "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2)
+          echo "count=${VALUE}" >> $GITHUB_OUTPUT
+          echo "[Pipeline 2] Workers deseados: ${VALUE}"
+
+      # ── Aplicar con Terraform ────────────────────────────────────────────────
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~> 1.5"
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: Terraform Apply — escalar workers
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          TF_VAR_worker_count: ${{ steps.workers.outputs.count }}
+        run: |
+          echo "[Pipeline 2] Aplicando worker_count=${{ steps.workers.outputs.count }}"
+          terraform apply \
+            -auto-approve \
+            -target=google_compute_instance.worker \
+            -target=google_compute_firewall.allow_worker_health \
+            -target=google_compute_firewall.allow_rabbitmq
+
+      - name: Resumen de escala
+        if: always()
+        run: |
+          echo "### Resultado del auto-scaling" >> $GITHUB_STEP_SUMMARY
+          echo "| Campo | Valor |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Workers aplicados | ${{ steps.workers.outputs.count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Trigger | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Acción | ${{ inputs.action || 'schedule (auto)' }} |" >> $GITHUB_STEP_SUMMARY
