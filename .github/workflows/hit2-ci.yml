@@ -1,0 +1,112 @@
+name: "Hit2 | CI/CD — Terraform Plan / Apply"
+
+# Requisito del Hit2:
+#   - terraform plan en cada Pull Request
+#   - terraform apply solo al mergear a main
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "TP3/Hit2/terraform/**"
+      - "TP3/Hit2/startup.sh"
+      - "TP3/Hit2/worker.py"
+      - "TP3/Hit2/Dockerfile"
+
+  push:
+    branches: [main]
+    paths:
+      - "TP3/Hit2/terraform/**"
+      - "TP3/Hit2/startup.sh"
+      - "TP3/Hit2/worker.py"
+      - "TP3/Hit2/Dockerfile"
+
+env:
+  TF_DIR: TP3/Hit2/terraform
+  TF_VAR_project_id:    ${{ vars.GCP_PROJECT_ID }}
+  TF_VAR_region:        ${{ vars.GCP_REGION }}
+  TF_VAR_zone:          ${{ vars.GCP_ZONE }}
+  TF_VAR_worker_count:  ${{ vars.HIT2_WORKER_COUNT || '3' }}
+  TF_VAR_rabbitmq_host: ${{ vars.HIT2_RABBITMQ_HOST }}
+  TF_VAR_rabbitmq_user: ${{ vars.RABBITMQ_USER }}
+  TF_VAR_rabbitmq_pass: ${{ secrets.RABBITMQ_PASS }}
+  TF_VAR_docker_image:  ${{ vars.HIT2_WORKER_IMAGE }}
+
+jobs:
+  # ── Plan en Pull Request ──────────────────────────────────────────────────
+  terraform-plan:
+    name: Terraform Plan (PR)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && secrets.GCP_SA_KEY != ''
+
+    permissions:
+      contents: read
+      pull-requests: write   # para postear el plan como comentario en el PR
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~> 1.5"
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform plan -no-color 2>&1 | tee plan.txt
+
+      - name: Publicar plan como comentario en el PR
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('${{ env.TF_DIR }}/plan.txt', 'utf8');
+            const truncated = plan.length > 60000 ? plan.slice(0, 60000) + '\n... (truncado)' : plan;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Terraform Plan — Hit2\n\`\`\`hcl\n${truncated}\n\`\`\``
+            });
+
+  # ── Apply al mergear a main ───────────────────────────────────────────────
+  terraform-apply:
+    name: Terraform Apply (main)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.GCP_SA_KEY != ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Autenticar en GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~> 1.5"
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve
+
+      - name: IPs de los workers creados
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform output worker_ips

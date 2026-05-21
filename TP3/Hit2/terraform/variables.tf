@@ -18,6 +18,16 @@ variable "rabbitmq_host" {
   type = string
 }
 
+variable "rabbitmq_user" {
+  type    = string
+  default = "user"
+}
+
+variable "rabbitmq_pass" {
+  type      = string
+  sensitive = true
+}
+
 variable "docker_image" {
   type = string
 }

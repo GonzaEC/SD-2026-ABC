@@ -19,9 +19,11 @@ resource "google_compute_instance" "worker" {
   }
 
   metadata_startup_script = templatefile(
-    "${path.module}/startup.sh",
+    "${path.module}/../startup.sh",
     {
       rabbitmq_host = var.rabbitmq_host
+      rabbitmq_user = var.rabbitmq_user
+      rabbitmq_pass = var.rabbitmq_pass
       docker_image  = var.docker_image
       worker_id     = "worker-${count.index}"
     }
