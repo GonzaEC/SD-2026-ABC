@@ -25,6 +25,7 @@ jobs:
   build-setup-image:
     name: Build & Push imagen de setup
     runs-on: ubuntu-latest
+    if: ${{ secrets.GCP_SA_KEY != '' }}
     permissions:
       contents: read
       id-token: write
@@ -32,11 +33,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Autenticar en GCP (Workload Identity Federation)
+      - name: Autenticar en GCP
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
-          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Configurar Docker para GCR
         run: gcloud auth configure-docker gcr.io --quiet
@@ -61,11 +61,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Autenticar en GCP (Workload Identity Federation)
+      - name: Autenticar en GCP
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
-          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Obtener credenciales GKE
         uses: google-github-actions/get-gke-credentials@v2

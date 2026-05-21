@@ -54,6 +54,7 @@ jobs:
   scale-workers:
     name: Calcular y aplicar escala de workers
     runs-on: ubuntu-latest
+    if: ${{ secrets.GCP_SA_KEY != '' }}
     permissions:
       contents: read
       id-token: write
@@ -61,11 +62,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Autenticar en GCP (Workload Identity Federation)
+      - name: Autenticar en GCP
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
-          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       # ── Calcular workers deseados ────────────────────────────────────────────
       - name: Instalar dependencias del scaler

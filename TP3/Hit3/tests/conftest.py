@@ -3,9 +3,24 @@ Fixtures compartidos para tests unitarios e integración de Hit3.
 """
 
 import io
+import os
 import math
+import tempfile
 import pytest
 from PIL import Image
+
+# Configurar variables de entorno ANTES de que cualquier servicio se importe.
+# LOG_DIR en /tmp evita errores de permisos en CI (los servicios crean /app/logs al importarse).
+_tmp_logs = os.path.join(tempfile.gettempdir(), "sobel-test-logs")
+os.makedirs(_tmp_logs, exist_ok=True)
+os.environ.setdefault("LOG_DIR", _tmp_logs)
+os.environ.setdefault("RABBITMQ_HOST", "localhost")
+os.environ.setdefault("RABBITMQ_USER", "user")
+os.environ.setdefault("RABBITMQ_PASS", "password")
+os.environ.setdefault("REDIS_HOST", "localhost")
+os.environ.setdefault("WORKER_ID", "test-worker")
+os.environ.setdefault("SPLIT_HOST", "split")
+os.environ.setdefault("SPLIT_PORT", "9000")
 
 
 @pytest.fixture

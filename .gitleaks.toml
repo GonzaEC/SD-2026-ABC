@@ -1,0 +1,27 @@
+# Configuración de Gitleaks para el proyecto SD-2026-ABC
+# Documenta los falsos positivos conocidos con justificación.
+
+title = "SD-2026-ABC Gitleaks config"
+
+[extend]
+# Usa las reglas oficiales como base
+useDefault = true
+
+[[allowlists]]
+description = "Credenciales de desarrollo local hardcodeadas en archivos de infra"
+# Estos valores son placeholders para entornos locales (docker-compose, k3d).
+# Las credenciales de producción se gestionan via GitHub Secrets / GCP Secret Manager.
+paths = [
+  "TP3/Hit3/docker-compose.yml",
+  "TP3/Hit3/k8s/rabbitmq.yaml",
+  "TP3/Hit3/terraform/terraform.tfvars",
+]
+
+[[allowlists]]
+description = "Variables de entorno seteadas en tests — no son credenciales reales"
+paths = [
+  "TP3/Hit3/tests/conftest.py",
+  "TP3/Hit3/tests/unit/test_worker_logic.py",
+  "TP3/Hit3/tests/unit/test_scaler.py",
+  "TP3/Hit3/tests/integration/test_pipeline_mock.py",
+]
