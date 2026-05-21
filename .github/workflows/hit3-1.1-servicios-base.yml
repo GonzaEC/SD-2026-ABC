@@ -22,10 +22,28 @@ env:
   SETUP_IMAGE: gcr.io/${{ vars.GCP_PROJECT_ID }}/sobel-setup
 
 jobs:
+  preflight:
+    name: Verificar credenciales GCP
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - id: check
+        env:
+          SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          if [ -n "$SA_KEY" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GCP_SA_KEY no configurado - se omite el deploy (no es un error)."
+          fi
+
   build-setup-image:
     name: Build & Push imagen de setup
     runs-on: ubuntu-latest
-    if: ${{ secrets.GCP_SA_KEY != '' }}
+    needs: preflight
+    if: needs.preflight.outputs.enabled == 'true'
     permissions:
       contents: read
       id-token: write
@@ -53,7 +71,8 @@ jobs:
   deploy-base:
     name: Deploy RabbitMQ + Redis + Setup Job
     runs-on: ubuntu-latest
-    needs: build-setup-image
+    needs: [preflight, build-setup-image]
+    if: needs.preflight.outputs.enabled == 'true'
     permissions:
       contents: read
       id-token: write
