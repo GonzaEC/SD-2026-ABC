@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "sobel-terraform-state"
+    bucket = "sobel-terraform-state-tp3-gcp-497003"
     prefix = "terraform/hit3/state"
   }
 }
