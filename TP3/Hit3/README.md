@@ -351,6 +351,82 @@ ssh -i ~/.ssh/gcp worker@<WORKER_IP> "docker logs -f sobel-worker-0"
 
 ---
 
+## Análisis de desempeño bajo carga
+
+Se evaluó el sistema modificando tres variables independientes y midiendo la latencia end-to-end (E2E) de cada job: desde el `POST /process` hasta que Redis reporta `status: completed`.
+
+**Herramienta:** script Python con `threading` que envía N jobs concurrentes y hace polling hasta la compleción. Métricas: p50/p95/p99 de latencia E2E y throughput (jobs/s).
+
+### Variables
+
+| Variable | Valores evaluados |
+|---|---|
+| **V1 — Tamaño de imagen** | 1 KB, 10 KB, 100 KB, 1 MB |
+| **V2 — Concurrencia** | 1, 5, 10 requests simultáneos |
+| **V3 — Workers** | 1 worker, 3 workers |
+
+Imágenes: PNGs en escala de grises con ruido aleatorio (sin compresión real) generadas sintéticamente.
+
+### Resultados
+
+#### V3 = 1 Worker
+
+| Tamaño | Concurrencia | p50 (s) | p95 (s) | p99 (s) | Jobs/s |
+|--------|-------------|---------|---------|---------|--------|
+| 1 KB   | 1           | 1.74    | 1.80    | 1.80    | 0.57   |
+| 1 KB   | 5           | 1.79    | 1.94    | 1.94    | 2.68   |
+| 1 KB   | 10          | 2.05    | 2.13    | 2.13    | 4.66   |
+| 10 KB  | 1           | 1.91    | 1.96    | 1.96    | 0.47   |
+| 10 KB  | 5           | 2.04    | 2.13    | 2.13    | 2.02   |
+| 10 KB  | 10          | 2.24    | 2.32    | 2.32    | 4.28   |
+| 100 KB | 1           | 2.79    | 4.96    | 4.96    | 0.27   |
+| 100 KB | 5           | 5.42    | 5.63    | 5.63    | 0.80   |
+| 100 KB | 10          | 9.22    | 13.38   | 13.38   | 0.68   |
+| 1 MB   | 1           | 153.37  | 162.80  | 162.80  | 0.006  |
+
+#### V3 = 3 Workers
+
+| Tamaño | Concurrencia | p50 (s) | p95 (s) | p99 (s) | Jobs/s |
+|--------|-------------|---------|---------|---------|--------|
+| 1 KB   | 1           | 1.75    | 1.83    | 1.83    | 0.51   |
+| 1 KB   | 5           | 1.79    | 1.91    | 1.91    | 2.71   |
+| 1 KB   | 10          | 2.09    | 2.20    | 2.20    | 4.49   |
+| 10 KB  | 1           | 1.91    | 1.95    | 1.95    | 0.47   |
+| 10 KB  | 5           | 2.05    | 2.13    | 2.13    | 1.97   |
+| 10 KB  | 10          | 2.23    | 2.30    | 2.30    | 4.32   |
+| 100 KB | 1           | 2.78    | 3.63    | 3.63    | 0.33   |
+| 100 KB | 5           | 2.87    | 4.26    | 4.26    | 1.19   |
+| 100 KB | 10          | 4.51    | 9.51    | 9.51    | 1.04   |
+| 1 MB   | 1           | 9.49    | 9.50    | 9.50    | 0.10   |
+| 1 MB   | 5           | 17.21   | 54.82   | 54.82   | 0.049  |
+
+### Análisis
+
+**V1 — Efecto del tamaño de imagen**
+
+La latencia escala de forma no lineal con el tamaño. Para imágenes pequeñas (1 KB, 10 KB), el cuello de botella no es el cómputo Sobel sino la latencia de red y el overhead del pipeline (split → queue → worker → joiner → Redis). Por eso 1 KB y 10 KB tienen tiempos casi idénticos (~1.9 s). A partir de 100 KB el tiempo de cómputo empieza a dominar, y en 1 MB es el factor determinante: el e2-micro tarda ~50 segundos por fragmento con 1 worker.
+
+**V2 — Efecto de la concurrencia**
+
+Con imágenes chicas (1–10 KB) la concurrencia mejora el throughput sin degradar significativamente la latencia individual, ya que los fragmentos son procesados rápido y la cola no se satura. Con 100 KB y concurrencia=10, la latencia p50 sube de 2.79 s a 9.22 s con 1 worker: la cola de tareas se acumula y los jobs esperan. El aumento de p95 respecto de p50 indica alta varianza por queuing.
+
+**V3 — Efecto de la cantidad de workers**
+
+El impacto es el más dramático. Como cada imagen se divide en **3 fragmentos** y cada worker procesa un fragmento a la vez:
+
+- Con **1 worker**: los 3 fragmentos van en serie → latencia proporcional a 3× el tiempo por fragmento.
+- Con **3 workers**: los 3 fragmentos van en paralelo → latencia proporcional a 1× el tiempo por fragmento.
+
+Resultado: **1 MB con 1 worker = 153 s → con 3 workers = 9.5 s (16× de speedup)**.
+
+Para 100 KB con concurrencia=10: 9.22 s → 4.51 s (2× de mejora), el cuello de botella se divide entre los 3 workers aunque la cola de 10 jobs simultáneos sigue generando espera.
+
+**Cuello de botella identificado**
+
+El worker VM (e2-micro, 1 vCPU) es el factor limitante del sistema. Escalar horizontalmente los workers tiene efecto inmediato y proporcional hasta que el cuello de botella se desplace a RabbitMQ o Redis (no observado en estos experimentos). El backend, split y joiner (en GKE apps-pool, e2-standard-2) no saturan en ninguno de los escenarios evaluados.
+
+---
+
 ## Decisiones de diseño
 
 | Decisión | Alternativa descartada | Razón |
