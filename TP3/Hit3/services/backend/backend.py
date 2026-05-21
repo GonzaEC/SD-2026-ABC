@@ -17,8 +17,8 @@ from fastapi.responses import Response
 import uvicorn
 import base64
 
-SPLIT_HOST = os.getenv("SPLIT_HOST", "split")
-SPLIT_PORT = os.getenv("SPLIT_PORT", "9000")
+SPLIT_HOST = os.getenv("SPLIT_HOST", "split.sobel.svc.cluster.local")
+SPLIT_PORT = os.getenv("SOBEL_SPLIT_PORT", "9000")
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 
 LOG_DIR = os.getenv("LOG_DIR", "/app/logs")
@@ -51,16 +51,22 @@ async def process(file: UploadFile = File(...)):
 
     datos = await file.read()
 
-    # Registrar el job en Redis como pendiente
-    redis_client.set(f"job:{job_id}:status", "pending")
+    try:
+        redis_client.set(f"job:{job_id}:status", "pending")
+    except Exception as e:
+        log.error(f"[Backend] Error Redis: {e}")
+        raise HTTPException(status_code=500, detail=f"Error Redis: {type(e).__name__}: {e}")
 
-    # Enviar imagen al split service
     split_url = f"http://{SPLIT_HOST}:{SPLIT_PORT}/split?job_id={job_id}"
-    async with httpx.AsyncClient(timeout=60.0) as client:
-        response = await client.post(
-            split_url,
-            files={"file": (file.filename, datos, file.content_type)},
-        )
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                split_url,
+                files={"file": (file.filename, datos, file.content_type)},
+            )
+    except Exception as e:
+        log.error(f"[Backend] Error contactando split service: {e}")
+        raise HTTPException(status_code=500, detail=f"Error split: {type(e).__name__}: {e}")
 
     if response.status_code != 200:
         redis_client.delete(f"job:{job_id}:status")

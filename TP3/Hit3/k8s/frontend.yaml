@@ -42,6 +42,7 @@ data:
   default.conf: |
     server {
         listen 80;
+        resolver 34.118.224.10 valid=10s;
 
         location / {
             root /usr/share/nginx/html;
@@ -49,7 +50,8 @@ data:
         }
 
         location /api/ {
-            proxy_pass http://backend/;
+            set $backend_host "backend.sobel.svc.cluster.local";
+            proxy_pass http://$backend_host/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }

@@ -10,8 +10,8 @@ output "cluster_endpoint" {
 }
 
 output "worker_ips" {
-  description = "Public IPs of Sobel worker VMs"
-  value       = [for w in google_compute_instance.worker : w.network_interface[0].access_config[0].nat_ip]
+  description = "Internal IPs of Sobel worker VMs"
+  value       = [for w in google_compute_instance.worker : w.network_interface[0].network_ip]
 }
 
 output "get_credentials_cmd" {

@@ -1,10 +1,16 @@
 #!/bin/bash
 
 apt-get update -y
-apt-get install -y docker.io
+apt-get install -y docker.io curl
 
 systemctl start docker
 systemctl enable docker
+
+# Autenticar Docker contra GCR usando el token del metadata server
+TOKEN=$(curl -s -H "Metadata-Flavor: Google" \
+  "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token" \
+  | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
+echo "$TOKEN" | docker login -u oauth2accesstoken --password-stdin https://gcr.io
 
 docker pull ${docker_image}
 

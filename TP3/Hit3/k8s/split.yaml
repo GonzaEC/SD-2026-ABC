@@ -19,21 +19,14 @@ spec:
         - key: nodegroup
           value: apps
           effect: NoSchedule
-      initContainers:
-        - name: wait-rabbitmq
-          image: busybox
-          command:
-            - sh
-            - -c
-            - until nc -z rabbitmq 5672; do echo "Esperando RabbitMQ..."; sleep 3; done
       containers:
         - name: split
-          image: gcr.io/mi-proyecto/sobel-split:latest
+          image: gcr.io/tp3-gcp-497003/sobel-split:latest
           ports:
             - containerPort: 9000
           env:
             - name: RABBITMQ_HOST
-              value: "rabbitmq"
+              value: "rabbitmq.sobel.svc.cluster.local"
             - name: RABBITMQ_USER
               valueFrom:
                 secretKeyRef:

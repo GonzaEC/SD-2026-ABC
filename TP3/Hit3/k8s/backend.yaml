@@ -19,27 +19,14 @@ spec:
         - key: nodegroup
           value: apps
           effect: NoSchedule
-      initContainers:
-        - name: wait-rabbitmq
-          image: busybox
-          command:
-            - sh
-            - -c
-            - until nc -z rabbitmq 5672; do echo "Esperando RabbitMQ..."; sleep 3; done
-        - name: wait-redis
-          image: busybox
-          command:
-            - sh
-            - -c
-            - until nc -z redis 6379; do echo "Esperando Redis..."; sleep 3; done
       containers:
         - name: backend
-          image: gcr.io/mi-proyecto/sobel-backend:latest
+          image: gcr.io/tp3-gcp-497003/sobel-backend:latest
           ports:
             - containerPort: 8080
           env:
             - name: RABBITMQ_HOST
-              value: "rabbitmq"
+              value: "rabbitmq.sobel.svc.cluster.local"
             - name: RABBITMQ_USER
               valueFrom:
                 secretKeyRef:
@@ -51,7 +38,7 @@ spec:
                   name: rabbitmq-secret
                   key: pass
             - name: REDIS_HOST
-              value: "redis"
+              value: "redis.sobel.svc.cluster.local"
           readinessProbe:
             httpGet:
               path: /health

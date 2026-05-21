@@ -21,6 +21,7 @@ resource "google_container_node_pool" "infra" {
 
   node_config {
     machine_type = var.infra_pool_machine_type
+    disk_size_gb = 30
 
     labels = {
       nodegroup = "infra"
@@ -47,6 +48,7 @@ resource "google_container_node_pool" "apps" {
 
   node_config {
     machine_type = var.apps_pool_machine_type
+    disk_size_gb = 30
 
     labels = {
       nodegroup = "apps"
@@ -81,7 +83,7 @@ resource "google_compute_instance" "worker" {
 
   network_interface {
     network = "default"
-    access_config {}
+    # Sin external IP para no consumir cuota IN_USE_ADDRESSES; Cloud NAT da salida
   }
 
   metadata_startup_script = templatefile(
@@ -96,6 +98,30 @@ resource "google_compute_instance" "worker" {
   )
 
   tags = ["sobel-worker"]
+
+  service_account {
+    email  = "${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+}
+
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
+# ── Cloud NAT — salida a internet para workers sin external IP ─────────────────
+resource "google_compute_router" "nat_router" {
+  name    = "sobel-nat-router"
+  network = "default"
+  region  = var.region
+}
+
+resource "google_compute_router_nat" "nat" {
+  name                               = "sobel-nat"
+  router                             = google_compute_router.nat_router.name
+  region                             = var.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
 
 # ── Firewall: health check de workers ─────────────────────────────────────────
