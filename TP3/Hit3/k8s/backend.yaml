@@ -24,6 +24,7 @@ spec:
           image: gcr.io/tp3-gcp-497003/sobel-backend:latest
           ports:
             - containerPort: 8080
+              name: http
           env:
             - name: RABBITMQ_HOST
               value: "rabbitmq.sobel.svc.cluster.local"
@@ -51,10 +52,13 @@ kind: Service
 metadata:
   name: backend
   namespace: sobel
+  labels:
+    app: backend
 spec:
   type: LoadBalancer
   selector:
     app: backend
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8080

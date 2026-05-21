@@ -18,9 +18,11 @@ import json
 import base64
 import io
 from fastapi import FastAPI
+from fastapi.responses import Response
 import uvicorn
 from PIL import Image
 from sobel import sobel
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 RABBITMQ_HOST = os.environ["RABBITMQ_HOST"]
 RABBITMQ_USER = os.environ["RABBITMQ_USER"]
@@ -45,10 +47,33 @@ logging.getLogger("pika").setLevel(logging.WARNING)
 
 app = FastAPI()
 
+# ── Métricas Prometheus ───────────────────────────────────────────────────────
+FRAGMENTOS = Counter(
+    "sobel_worker_fragments_processed_total",
+    "Fragmentos procesados por el worker",
+    ["worker_id", "status"],
+)
+TIEMPO_PROC = Histogram(
+    "sobel_worker_processing_seconds",
+    "Tiempo de procesamiento de un fragmento (segundos)",
+    ["worker_id"],
+    buckets=(0.5, 1, 2, 5, 10, 20, 30, 60, 120),
+)
+ERRORES = Counter(
+    "sobel_worker_errors_total",
+    "Errores al procesar fragmentos",
+    ["worker_id"],
+)
+
 
 @app.get("/health")
 def health():
     return {"servicio": WORKER_ID, "status": "running"}
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 def iniciar_api():
@@ -109,6 +134,7 @@ def procesar_mensaje(ch, method, properties, body):
     if method.redelivered:
         log.info(f"[Worker {WORKER_ID}] Mensaje reenviado detectado.")
 
+    inicio = time.time()
     try:
         mensaje = json.loads(body)
         indice = mensaje["indice"]
@@ -136,6 +162,9 @@ def procesar_mensaje(ch, method, properties, body):
         # Pub/Sub: publica al fanout → joiner y monitor reciben la notificación
         publicar_resultado(mensaje_resultado)
 
+        TIEMPO_PROC.labels(worker_id=WORKER_ID).observe(time.time() - inicio)
+        FRAGMENTOS.labels(worker_id=WORKER_ID, status="success").inc()
+
         log.info(
             f"[Worker {WORKER_ID}] Fragmento {indice} procesado y publicado al fanout."
         )
@@ -143,6 +172,8 @@ def procesar_mensaje(ch, method, properties, body):
 
     except Exception as e:
         # DLQ: si el procesamiento falla, NACK sin requeue → va a tareas_muertos
+        FRAGMENTOS.labels(worker_id=WORKER_ID, status="failed").inc()
+        ERRORES.labels(worker_id=WORKER_ID).inc()
         log.error(
             f"[Worker {WORKER_ID}] Error procesando fragmento: {e}. Enviando a DLQ."
         )

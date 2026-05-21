@@ -1,0 +1,71 @@
+# ServiceMonitors — le dicen a Prometheus qué Services scrapear y en qué puerto.
+# Prometheus (kube-prometheus-stack) los descubre automáticamente porque en
+# helm/values.yaml seteamos serviceMonitorSelectorNilUsesHelmValues: false.
+
+# ── RabbitMQ — plugin rabbitmq_prometheus en :15692 ──────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rabbitmq
+  namespace: sobel
+  labels:
+    release: kps
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  endpoints:
+    - port: prometheus
+      path: /metrics
+      interval: 15s
+---
+# ── Backend — métricas custom de FastAPI en /metrics (puerto HTTP) ───────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend
+  namespace: sobel
+  labels:
+    release: kps
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+# ── Split ─────────────────────────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: split
+  namespace: sobel
+  labels:
+    release: kps
+spec:
+  selector:
+    matchLabels:
+      app: split
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+# ── Joiner ────────────────────────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: joiner
+  namespace: sobel
+  labels:
+    release: kps
+spec:
+  selector:
+    matchLabels:
+      app: joiner
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

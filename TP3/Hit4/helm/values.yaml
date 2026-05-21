@@ -1,0 +1,119 @@
+# Valores para kube-prometheus-stack en el cluster Sobel (Hit #4)
+#
+# Puntos clave:
+#  - Todos los componentes con estado van al infra-pool (nodeSelector + toleration
+#    del taint nodegroup=infra). node-exporter es la excepción: corre en TODOS los
+#    nodos para poder medir CPU/mem de apps-pool también.
+#  - Sin PVC: Prometheus/Alertmanager usan emptyDir para no chocar contra la cuota
+#    SSD_TOTAL_GB de GCP. Las métricas se pierden si el pod se reinicia (aceptable
+#    para esta demo; retención de 24h).
+#  - Grafana se expone como NodePort (no LoadBalancer) para no consumir una IP
+#    externa — la cuota IN_USE_ADDRESSES ya está al límite (4).
+
+# ── Toleration reutilizable para el taint del infra-pool ──────────────────────
+# (YAML no permite anchors entre claves de subcharts distintos, se repite)
+
+# ── Prometheus ────────────────────────────────────────────────────────────────
+prometheus:
+  prometheusSpec:
+    retention: 24h
+    nodeSelector:
+      nodegroup: infra
+    tolerations:
+      - key: nodegroup
+        value: infra
+        effect: NoSchedule
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        memory: 1536Mi
+    # Descubrir TODOS los ServiceMonitor/PodMonitor/PrometheusRule del cluster,
+    # no solo los que tienen el label del release de Helm.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    # Scrape estático de las worker VMs (fuera del cluster GKE).
+    # Las VMs están en el mismo VPC; Prometheus las alcanza por IP interna.
+    # Si se recrean las VMs con otras IPs, actualizar esta lista.
+    additionalScrapeConfigs:
+      - job_name: sobel-workers
+        scrape_interval: 15s
+        static_configs:
+          - targets:
+              - 10.128.0.24:8000
+              - 10.128.0.25:8000
+              - 10.128.0.26:8000
+            labels:
+              service: worker
+
+# ── Grafana ───────────────────────────────────────────────────────────────────
+grafana:
+  adminPassword: "sobel-admin"
+  nodeSelector:
+    nodegroup: infra
+  tolerations:
+    - key: nodegroup
+      value: infra
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    type: NodePort
+    nodePort: 30300
+  # El sidecar de dashboards levanta cualquier ConfigMap con el label
+  # grafana_dashboard: "1" (ver dashboards/)
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+
+# ── Alertmanager ──────────────────────────────────────────────────────────────
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      nodegroup: infra
+    tolerations:
+      - key: nodegroup
+        value: infra
+        effect: NoSchedule
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+# ── Prometheus Operator ───────────────────────────────────────────────────────
+prometheusOperator:
+  nodeSelector:
+    nodegroup: infra
+  tolerations:
+    - key: nodegroup
+      value: infra
+      effect: NoSchedule
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        nodegroup: infra
+      tolerations:
+        - key: nodegroup
+          value: infra
+          effect: NoSchedule
+
+# ── kube-state-metrics (estado de pods/deployments) ───────────────────────────
+kube-state-metrics:
+  nodeSelector:
+    nodegroup: infra
+  tolerations:
+    - key: nodegroup
+      value: infra
+      effect: NoSchedule
+
+# ── node-exporter (CPU/mem por nodo — DaemonSet en TODOS los nodos) ───────────
+prometheus-node-exporter:
+  tolerations:
+    - operator: Exists

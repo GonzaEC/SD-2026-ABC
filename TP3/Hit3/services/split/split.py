@@ -14,8 +14,10 @@ import base64
 import io
 import uuid
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import Response
 import uvicorn
 from PIL import Image
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 RABBITMQ_HOST = os.environ["RABBITMQ_HOST"]
 RABBITMQ_USER = os.environ["RABBITMQ_USER"]
@@ -40,10 +42,31 @@ logging.getLogger("pika").setLevel(logging.WARNING)
 
 app = FastAPI()
 
+# ── Métricas Prometheus ───────────────────────────────────────────────────────
+SPLIT_REQUESTS = Counter(
+    "sobel_split_requests_total",
+    "Peticiones de split recibidas",
+    ["status"],
+)
+SPLIT_FRAGMENTS = Counter(
+    "sobel_split_fragments_total",
+    "Fragmentos publicados a tareas_exchange",
+)
+SPLIT_DURATION = Histogram(
+    "sobel_split_duration_seconds",
+    "Tiempo de dividir y publicar una imagen (segundos)",
+    buckets=(0.1, 0.25, 0.5, 1, 2, 5, 10, 30),
+)
+
 
 @app.get("/health")
 def health():
     return {"servicio": "split", "status": "running"}
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 def conectar_rabbit():
@@ -117,13 +140,18 @@ def dividir_y_publicar(imagen: Image.Image, job_id: str) -> int:
 
 @app.post("/split")
 async def split_endpoint(job_id: str, file: UploadFile = File(...)):
+    inicio = time.time()
     try:
         datos = await file.read()
         imagen = Image.open(io.BytesIO(datos))
     except Exception as e:
+        SPLIT_REQUESTS.labels(status="error").inc()
         raise HTTPException(status_code=400, detail=f"Imagen inválida: {e}")
 
     total = dividir_y_publicar(imagen, job_id)
+    SPLIT_FRAGMENTS.inc(total)
+    SPLIT_REQUESTS.labels(status="ok").inc()
+    SPLIT_DURATION.observe(time.time() - inicio)
     return {"job_id": job_id, "fragmentos": total}
 
 

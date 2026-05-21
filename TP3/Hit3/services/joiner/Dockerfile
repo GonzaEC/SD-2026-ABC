@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir pika pillow fastapi uvicorn redis
+RUN pip install --no-cache-dir pika pillow fastapi uvicorn redis prometheus-client
 
 COPY joiner.py .
 

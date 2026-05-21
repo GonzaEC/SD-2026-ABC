@@ -19,8 +19,10 @@ import base64
 import io
 import redis
 from fastapi import FastAPI
+from fastapi.responses import Response
 import uvicorn
 from PIL import Image
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 RABBITMQ_HOST = os.environ["RABBITMQ_HOST"]
 RABBITMQ_USER = os.environ["RABBITMQ_USER"]
@@ -50,10 +52,30 @@ fragmentos_por_job: dict[str, list] = {}
 
 app = FastAPI()
 
+# ── Métricas Prometheus ───────────────────────────────────────────────────────
+FRAGMENTOS_RECIBIDOS = Counter(
+    "sobel_joiner_fragments_received_total",
+    "Fragmentos de resultado recibidos del fanout",
+)
+JOBS_COMPLETADOS = Counter(
+    "sobel_joiner_jobs_completed_total",
+    "Jobs reconstruidos y guardados en Redis",
+)
+RECONSTRUCCION = Histogram(
+    "sobel_joiner_reconstruction_seconds",
+    "Tiempo de reconstruir una imagen completa (segundos)",
+    buckets=(0.1, 0.25, 0.5, 1, 2, 5, 10, 30),
+)
+
 
 @app.get("/health")
 def health():
     return {"servicio": "joiner", "status": "running"}
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 def iniciar_api():
@@ -125,6 +147,7 @@ def procesar_resultado(ch, method, properties, body):
     total = mensaje["fragmentos"]
 
     log.info(f"[Joiner] Fragmento {indice}/{total-1} recibido para job {job_id}")
+    FRAGMENTOS_RECIBIDOS.inc()
 
     if job_id not in fragmentos_por_job:
         fragmentos_por_job[job_id] = []
@@ -132,13 +155,16 @@ def procesar_resultado(ch, method, properties, body):
 
     if len(fragmentos_por_job[job_id]) == total:
         log.info(f"[Joiner] Job {job_id} completo. Reconstruyendo imagen...")
+        inicio = time.time()
         imagen_b64 = reconstruir_imagen(fragmentos_por_job[job_id])
+        RECONSTRUCCION.observe(time.time() - inicio)
 
         # Guardar resultado en Redis para que el backend pueda servirlo
         redis_client.set(f"job:{job_id}:result", imagen_b64)
         redis_client.set(f"job:{job_id}:status", "completed")
 
         del fragmentos_por_job[job_id]
+        JOBS_COMPLETADOS.inc()
         log.info(f"[Joiner] Job {job_id} guardado en Redis.")
 
     ch.basic_ack(delivery_tag=method.delivery_tag)

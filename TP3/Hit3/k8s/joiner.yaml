@@ -24,6 +24,7 @@ spec:
           image: gcr.io/tp3-gcp-497003/sobel-joiner:latest
           ports:
             - containerPort: 9001
+              name: http
           env:
             - name: RABBITMQ_HOST
               value: "rabbitmq.sobel.svc.cluster.local"
@@ -45,3 +46,19 @@ spec:
               port: 9001
             initialDelaySeconds: 10
             periodSeconds: 5
+---
+# Service ClusterIP — necesario para que el ServiceMonitor scrapee /metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: joiner
+  namespace: sobel
+  labels:
+    app: joiner
+spec:
+  selector:
+    app: joiner
+  ports:
+    - name: http
+      port: 9001
+      targetPort: 9001

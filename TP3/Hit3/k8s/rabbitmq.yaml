@@ -1,3 +1,13 @@
+# Habilita el plugin rabbitmq_prometheus (métricas en :15692) además del management
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-plugins
+  namespace: sobel
+data:
+  enabled_plugins: |
+    [rabbitmq_management,rabbitmq_prometheus].
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,6 +37,12 @@ spec:
               name: amqp
             - containerPort: 15672
               name: management
+            - containerPort: 15692
+              name: prometheus
+          volumeMounts:
+            - name: plugins
+              mountPath: /etc/rabbitmq/enabled_plugins
+              subPath: enabled_plugins
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
@@ -43,6 +59,10 @@ spec:
               command: ["rabbitmq-diagnostics", "ping"]
             initialDelaySeconds: 20
             periodSeconds: 10
+      volumes:
+        - name: plugins
+          configMap:
+            name: rabbitmq-plugins
 ---
 # ClusterIP para acceso interno desde pods del cluster
 apiVersion: v1
@@ -50,6 +70,8 @@ kind: Service
 metadata:
   name: rabbitmq
   namespace: sobel
+  labels:
+    app: rabbitmq
 spec:
   selector:
     app: rabbitmq
@@ -60,6 +82,9 @@ spec:
     - name: management
       port: 15672
       targetPort: 15672
+    - name: prometheus
+      port: 15692
+      targetPort: 15692
 ---
 # LoadBalancer interno para que las worker VMs (fuera del cluster) puedan conectarse
 apiVersion: v1

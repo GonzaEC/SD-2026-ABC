@@ -24,6 +24,7 @@ spec:
           image: gcr.io/tp3-gcp-497003/sobel-split:latest
           ports:
             - containerPort: 9000
+              name: http
           env:
             - name: RABBITMQ_HOST
               value: "rabbitmq.sobel.svc.cluster.local"
@@ -51,9 +52,12 @@ kind: Service
 metadata:
   name: split
   namespace: sobel
+  labels:
+    app: split
 spec:
   selector:
     app: split
   ports:
-    - port: 9000
+    - name: http
+      port: 9000
       targetPort: 9000

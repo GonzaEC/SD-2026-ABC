@@ -16,6 +16,8 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import Response
 import uvicorn
 import base64
+import time
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 SPLIT_HOST = os.getenv("SPLIT_HOST", "split.sobel.svc.cluster.local")
 SPLIT_PORT = os.getenv("SOBEL_SPLIT_PORT", "9000")
@@ -38,15 +40,33 @@ redis_client = redis.Redis(host=REDIS_HOST, port=6379, decode_responses=True)
 
 app = FastAPI(title="Sobel Backend")
 
+# ── Métricas Prometheus ───────────────────────────────────────────────────────
+JOBS_SUBMITTED = Counter(
+    "sobel_backend_jobs_submitted_total",
+    "Jobs recibidos por el backend",
+    ["status"],
+)
+REQUEST_DURATION = Histogram(
+    "sobel_backend_process_duration_seconds",
+    "Duración del endpoint /process (segundos)",
+    buckets=(0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60),
+)
+
 
 @app.get("/health")
 def health():
     return {"servicio": "backend", "status": "running"}
 
 
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
 @app.post("/process")
 async def process(file: UploadFile = File(...)):
     """Recibe una imagen, la envía al split service y retorna un job_id."""
+    inicio = time.time()
     job_id = str(uuid.uuid4())
 
     datos = await file.read()
@@ -55,6 +75,7 @@ async def process(file: UploadFile = File(...)):
         redis_client.set(f"job:{job_id}:status", "pending")
     except Exception as e:
         log.error(f"[Backend] Error Redis: {e}")
+        JOBS_SUBMITTED.labels(status="error").inc()
         raise HTTPException(status_code=500, detail=f"Error Redis: {type(e).__name__}: {e}")
 
     split_url = f"http://{SPLIT_HOST}:{SPLIT_PORT}/split?job_id={job_id}"
@@ -66,10 +87,12 @@ async def process(file: UploadFile = File(...)):
             )
     except Exception as e:
         log.error(f"[Backend] Error contactando split service: {e}")
+        JOBS_SUBMITTED.labels(status="error").inc()
         raise HTTPException(status_code=500, detail=f"Error split: {type(e).__name__}: {e}")
 
     if response.status_code != 200:
         redis_client.delete(f"job:{job_id}:status")
+        JOBS_SUBMITTED.labels(status="error").inc()
         raise HTTPException(
             status_code=502, detail=f"Error en split service: {response.text}"
         )
@@ -79,6 +102,8 @@ async def process(file: UploadFile = File(...)):
         f"[Backend] Job {job_id} iniciado: {info['fragmentos']} fragmentos enviados."
     )
 
+    JOBS_SUBMITTED.labels(status="ok").inc()
+    REQUEST_DURATION.observe(time.time() - inicio)
     return {"job_id": job_id, "fragmentos": info["fragmentos"], "status": "pending"}
 
 

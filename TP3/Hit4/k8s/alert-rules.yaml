@@ -1,0 +1,43 @@
+# Reglas de alerta para la plataforma Sobel.
+# Prometheus (kube-prometheus-stack) las descubre porque en values.yaml
+# seteamos ruleSelectorNilUsesHelmValues: false.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: sobel-alerts
+  namespace: monitoring
+  labels:
+    release: kps
+spec:
+  groups:
+    - name: sobel.rules
+      rules:
+        # ── Cola de tareas saturada ──────────────────────────────────────────
+        - alert: ColaTareasAlta
+          expr: rabbitmq_queue_messages{queue="tareas"} > 20
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Backlog alto en la cola 'tareas'"
+            description: "La cola 'tareas' tiene {{ $value }} mensajes pendientes hace más de 1 minuto (umbral: 20). Posible falta de workers."
+
+        # ── Worker sin responder ─────────────────────────────────────────────
+        - alert: WorkerCaido
+          expr: up{job="sobel-workers"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Worker Sobel sin responder"
+            description: "El worker {{ $labels.instance }} no responde a Prometheus hace más de 1 minuto."
+
+        # ── Tasa de errores de procesamiento elevada ─────────────────────────
+        - alert: ErroresProcesamiento
+          expr: sum(rate(sobel_worker_errors_total[5m])) > 0.1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Errores de procesamiento en los workers"
+            description: "Los workers están fallando fragmentos (>{{ $value }}/s) hace más de 2 minutos."
