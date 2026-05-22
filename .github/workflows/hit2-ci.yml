@@ -61,7 +61,7 @@ jobs:
       - name: Terraform Validate
         working-directory: ${{ env.TF_DIR }}
         run: terraform validate
-        
+
       - name: Terraform Plan
         id: plan
         working-directory: ${{ env.TF_DIR }}
@@ -86,7 +86,7 @@ jobs:
   terraform-apply:
     name: Terraform Apply (main)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.GCP_SA_KEY != ''
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' 
 
     steps:
       - uses: actions/checkout@v4
