@@ -67,14 +67,8 @@ Provisioning  →  Bootstrap  →  Deploy  →  Join  →  Teardown
 
 ## Ejecución desde la terminal
 
-### 1. Levantar RabbitMQ localmente
 
-```bash
-kubectl apply -f rabbitmq.yaml
-kubectl port-forward svc/rabbitmq 5672:5672 15672:15672 &
-```
-
-### 2. Configurar Terraform
+### 1. Configurar Terraform
 
 Editar `terraform/terraform.tfvars` (no committear — está en .gitignore):
 
@@ -83,13 +77,13 @@ project_id    = "mi-proyecto-gcp"
 region        = "us-central1"
 zone          = "us-central1-a"
 worker_count  = 3
-rabbitmq_host = "34.x.x.x"   # IP pública de tu máquina o tunnel
+
 rabbitmq_user = "user"
 rabbitmq_pass = "password"
 docker_image  = "gcr.io/mi-proyecto/sobel-worker:latest"
 ```
-
-### 3. Buildear y pushear la imagen del worker
+(tambien se debe configurar un .env con las variables RABBITMQ_USER y RABBITMQ_PASS que deben coincidir con las que tiene terraform.tfvars)
+### 2. Buildear y pushear la imagen del worker
 
 ```bash
 docker build -t gcr.io/MI_PROYECTO/sobel-worker:latest .
@@ -97,10 +91,16 @@ gcloud auth configure-docker gcr.io
 docker push gcr.io/MI_PROYECTO/sobel-worker:latest
 ```
 
-### 4. Instalar dependencias Python
+### 3. Instalar dependencias Python
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 4. Seleccionar ubicacion del Hit 2
+
+```bash
+cd TP3/Hit2
 ```
 
 ### 5. Ejecutar el proceso principal

@@ -18,7 +18,7 @@ import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent / ".env")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -28,14 +28,16 @@ log = logging.getLogger(__name__)
 logging.getLogger("pika").setLevel(logging.WARNING)
 listaFragmentos = []
 # Conectar al broker
-credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
-    os.environ["RABBITMQ_PASS"])
-connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='localhost',
-                                    port = 5672,
-                                    credentials=credencial)
-    )
-channel = connection.channel()
+def conectar_rabbit():
+    credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
+        os.environ["RABBITMQ_PASS"])
+    connection = pika.BlockingConnection(
+                pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"],
+                                        port = 5672,
+                                        credentials=credencial)
+        )
+    return connection
+
 
 class Joiner:
    
@@ -103,6 +105,7 @@ class Joiner:
             result.save(self.output_path)
             log.info(f"[Joiner] Imagen guardada: {self.output_path}")
             log.info("¡Listo!")
+            ch.stop_consuming()
             
             
         else:
@@ -116,7 +119,8 @@ class Joiner:
 
     def main(self):
         threading.Thread(target=self.iniciar_api, daemon=True).start()
-
+        connection = conectar_rabbit()
+        channel = connection.channel()
         # Declarar la misma cola que el productor (idempotente)
         channel.queue_declare(queue='resultado', durable=True)
 

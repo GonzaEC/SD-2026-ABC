@@ -14,7 +14,8 @@ import sys
 import os
 import subprocess
 from PIL import Image
-from fastapi import FastAPI,requests
+from fastapi import FastAPI
+import requests
 import uvicorn
 import threading
 import os
@@ -31,6 +32,7 @@ from pathlib import Path
 import queue
 from dotenv import load_dotenv
 from pathlib import Path
+import socket
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -138,8 +140,25 @@ def obtener_ips_workers():
 
     return ips
 
+def obtener_ip_rabbit():
 
-def esperar_workers(ips, timeout=300):
+    resultado = subprocess.check_output(
+        [
+            "terraform",
+            "output",
+            "-json"
+        ],
+        cwd=TERRAFORM_DIR
+    )
+
+    data = json.loads(resultado)
+
+    ip = data["rabbitmq_ip"]["value"]
+
+    return ip
+
+
+def esperar_workers(ips, timeout=500):
 
     inicio = time.time()
 
@@ -183,6 +202,29 @@ def esperar_workers(ips, timeout=300):
 
         time.sleep(5)
 
+def esperar_rabbit(host, port=5672, timeout=300):
+
+    inicio = time.time()
+
+    while True:
+
+        try:
+
+            with socket.create_connection((host, port), timeout=5):
+
+                logging.info("RabbitMQ disponible")
+
+                return
+
+        except Exception as e:
+
+            logging.info(f"RabbitMQ no disponible: {e}")
+
+        if time.time() - inicio > timeout:
+
+            raise TimeoutError("Timeout esperando RabbitMQ")
+
+        time.sleep(5)
 
 def main(): 
     # ── Validar argumentos ───────────────────────────────────────────────────
@@ -217,6 +259,10 @@ def main():
         esperar_workers(ips)
 
         workers = len(ips)
+        rabbitmq_ip = obtener_ip_rabbit()
+        os.environ["RABBITMQ_HOST"] = rabbitmq_ip
+
+        esperar_rabbit(rabbitmq_ip)
 
         #iniciamos el splitter 
         splitter = Splitter(tareas, cola_publicaciones, workers)
@@ -224,13 +270,14 @@ def main():
 
         #iniciamos el joiner
         joiner = Joiner(tareas,output_path)
-        threading.Thread(target=joiner.main,  daemon=False).start()
-
+        joinerThread = threading.Thread(target=joiner.main,  daemon=False)
+        joinerThread.start()
         #iniciamos el loop del proceso principal
         threading.Thread(target=loop, daemon=True).start()
 
         #iniciamos el splitter
         splitter.procesar(image)
+        joinerThread.join()
     except KeyboardInterrupt:
         log.info("Interrupcion por teclado, cerrando...")
     finally:
@@ -253,7 +300,7 @@ def splitter_publicar():
     credencial= pika.PlainCredentials(os.environ["RABBITMQ_USER"],
     os.environ["RABBITMQ_PASS"])
     connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost',
+    pika.ConnectionParameters(host=os.environ["RABBITMQ_HOST"],
                                 port = 5672,
                                 credentials=credencial)
     )

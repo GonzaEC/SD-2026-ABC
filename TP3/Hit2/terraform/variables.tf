@@ -14,9 +14,6 @@ variable "worker_count" {
   type = number
 }
 
-variable "rabbitmq_host" {
-  type = string
-}
 
 variable "rabbitmq_user" {
   type    = string

@@ -30,7 +30,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 host=os.environ["RABBITMQ_HOST"]
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 # -------------------------
 # LOGGING (MEMORIA + DISCO)
