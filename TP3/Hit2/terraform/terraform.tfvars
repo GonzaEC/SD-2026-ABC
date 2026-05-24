@@ -1,9 +1,8 @@
-project_id    = "mi-proyecto"
+project_id    = "mi-proyecto-gcp"
 region        = "us-central1"
 zone          = "us-central1-a"
-
 worker_count  = 3
 
-rabbitmq_host = "192.168.1.10"
-
-docker_image  = "ianott/sobel-worker:latest"
+rabbitmq_user = "user"
+rabbitmq_pass = "password"
+docker_image  = "gcr.io/mi-proyecto/sobel-worker:latest"
