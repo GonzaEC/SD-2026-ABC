@@ -83,7 +83,15 @@ rabbitmq_pass = "password"
 docker_image  = "gcr.io/mi-proyecto/sobel-worker:latest"
 ```
 (tambien se debe configurar un .env con las variables RABBITMQ_USER y RABBITMQ_PASS que deben coincidir con las que tiene terraform.tfvars)
-### 2. Buildear y pushear la imagen del worker
+
+### 2. Iniciar sesion en gcloud y elegir proyecto
+
+```bash
+gcloud auth login
+gcloud config set project <project_id>
+```
+
+### 3. Buildear y pushear la imagen del worker
 
 ```bash
 docker build -t gcr.io/MI_PROYECTO/sobel-worker:latest .
@@ -91,19 +99,19 @@ gcloud auth configure-docker gcr.io
 docker push gcr.io/MI_PROYECTO/sobel-worker:latest
 ```
 
-### 3. Instalar dependencias Python
+### 4. Instalar dependencias Python
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Seleccionar ubicacion del Hit 2
+### 5. Seleccionar ubicacion del Hit 2
 
 ```bash
 cd TP3/Hit2
 ```
 
-### 5. Ejecutar el proceso principal
+### 6. Ejecutar el proceso principal
 
 ```bash
 python ProcesoPrincipal.py /ruta/imagen.jpg /ruta/salida_sobel.jpg
@@ -169,3 +177,36 @@ Variables necesarias en GitHub:
 | Workers en e2-micro | e2-standard | Balancear costo vs capacidad para una demo. Para imágenes grandes se puede cambiar `machine_type` en una variable |
 | `terraform destroy` al terminar | Apagar VMs (stop) | Costo cero entre ejecuciones. Las VMs de GCP cobran aunque estén detenidas (disco) |
 | Tolerancia a fallos con resubmisión | Sin tolerancia | Si un worker no responde en 20s, ProcesoPrincipal reenvía la tarea. Evita que una VM con problema bloquee el pipeline completo |
+
+### Instrucciones para ejecutar el test
+## Requisitos previos
+
+- Python 3.11
+- Docker Desktop
+- k3d + kubectl
+- Terraform >= 1.5
+- gcloud CLI autenticado (`gcloud auth application-default login`)
+- GCP project con Compute Engine API habilitada
+- Bucket GCS `sobel-terraform-state` creado
+
+---
+# 1. Seleccionar ubicacion del Hit 1
+Abrir una terminal y ejecutar:
+```bash
+cd ./TP3/Hit2
+```
+---
+### 2. Instalar dependencias Python
+
+```bash
+pip install -r requirements.txt
+```
+# 3. Ejecutar el test
+Luego utilizar los siguientes comandos:
+
+```bash
+python -m pytest .\tests\test_integracion.py
+python -m pytest .\tests\test_creacion.py
+python -m pytest .\tests\test_healthcheckW.py
+python -m pytest .\tests\test_rabbit.py
+```
