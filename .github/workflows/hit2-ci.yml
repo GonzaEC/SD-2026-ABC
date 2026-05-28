@@ -40,6 +40,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write   # para postear el plan como comentario en el PR
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +48,8 @@ jobs:
       - name: Autenticar en GCP
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v3
@@ -88,13 +90,18 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' 
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Autenticar en GCP
+       - name: Autenticar en GCP
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v3
