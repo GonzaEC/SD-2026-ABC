@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-       - name: Autenticar en GCP
+      - name: Autenticar en GCP
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
