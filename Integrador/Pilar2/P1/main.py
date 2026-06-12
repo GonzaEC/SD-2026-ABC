@@ -122,7 +122,7 @@ def create_block():
             data,
             "00",
             "0",
-            "100000000"
+            "1000000"
         ],
         capture_output=True,
         text=True
