@@ -49,7 +49,7 @@ def mine(req: MineRequest):
 
     result = subprocess.run(
         [
-            "./minero.exe",
+            "./minero",
             req.difficulty,
             req.data,
             str(req.start),
@@ -96,11 +96,8 @@ def build_block():
 
 @app.post("/create-block")
 def create_block():
-
     if len(pending_transactions) == 0:
-        return {
-            "error": "No hay transacciones pendientes"
-        }
+        return {"error": "No hay transacciones pendientes"}
 
     previous_hash = blockchain[-1]["hash"]
 
@@ -111,68 +108,39 @@ def create_block():
         "previous_hash": previous_hash
     }
 
-    data = json.dumps(
-        block,
-        sort_keys=True
-    )
+    data = json.dumps(block, sort_keys=True)
+
 
     result = subprocess.run(
-        [
-            "./minero",
-            data,
-            "00",
-            "0",
-            "1000000"
-        ],
+        ["./minero", data, "00", "0", "1000000"],
         capture_output=True,
         text=True
     )
-    print("STDOUT:")
-    print(result.stdout)
-
-    print("STDERR:")
-    print(result.stderr)
-
-    print("RETURN CODE:")
-    print(result.returncode)
-
+    
     salida = result.stdout
-
     nonce = None
     block_hash = None
 
+    # Procesar salida si el binario corrió bien
     for linea in salida.splitlines():
-
         if linea.startswith("Nonce encontrado:"):
             nonce = int(linea.split(":")[1].strip())
-
         if linea.startswith("Hash resultante:"):
             block_hash = linea.split(":")[1].strip()
 
+    
     if nonce is None or block_hash is None:
-        return {
-            "error": "No se encontró solución"
-        }
+        return {"error": "No se encontró solución en el rango estipulado"}
 
     block["nonce"] = nonce
     block["hash"] = block_hash
 
     blockchain.append(block)
-
     pending_transactions.clear()
 
     return {
-        "message": "Bloque agregado",
+        "message": "Bloque agregado (Simulación CPU/K8s activa si falló CUDA)",
         "block": block
-    }
-
-#Endpoint para consultar la blockchain
-@app.get("/chain")
-def get_chain():
-
-    return {
-        "length": len(blockchain),
-        "chain": blockchain
     }
 
 #validacion

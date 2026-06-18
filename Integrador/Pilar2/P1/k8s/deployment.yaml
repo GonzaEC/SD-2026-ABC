@@ -19,7 +19,10 @@ spec:
       - name: api
 
         image: ianott/blockchain-api:latest
-
         ports:
         - containerPort: 8000
+        resources:
+            limits:
+              nvidia.com/gpu: 1
+        
       
